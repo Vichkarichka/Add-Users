@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<head>
+    <title>Add Users</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+</head>
+<body>
+    <div id="page">
+        <div id = "modal_form">
+            <span id="modal_close">X</span>
+            <p>Add new person</p>
+            <label>Name</label>
+            <input type="text" id = "inputName" pattern ="[A-Za-z]+">
+            <label>Surname</label>
+            <input type="text" id = "inputSurname" required pattern="[A-Za-z]+">
+            <label>Age</label>
+            <input type="number" id = "inputAge" min="0" step="1">
+            <button id ="ADD">ADD</button>
+        </div>
+        <div id = "modal_formTwo">
+            <span id="modal_close">X</span>
+            <div id = "form">
+                <p>Info about person</p>
+                <label>Name</label>
+                <p id = "infoName"></p>
+                <label>Surname</label>
+                <p id = "infoSurname"></p>
+                <label>Age</label>
+                <p id = "infoAge"></p>
+                <button id ="Cancel">Cancel</button>
+            </div>
+        </div>
+        <div id = "modal_formThree">
+            <span id="modal_close">X</span>
+            <p>Update person</p>
+            <label>Name</label>
+            <input type="text" id = "updateName" required pattern="[A-Za-z]+">
+            <label>Surname</label>
+            <input type="text" id = "updateSurname" required pattern="[A-Za-z]+">
+            <label>Age</label>
+            <input type="number" id = "updateAge" min="0" step="1">
+            <button id ="UPDATE">UPDATE</button>
+        </div>
+        <div id="overlay"></div>
+        <button id = "buttonNew">New Person</button>
+        <button id = "buttonShow">Show All Persons</button>
+    </div>
+</body>
