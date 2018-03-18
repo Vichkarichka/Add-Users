@@ -7,17 +7,6 @@
 </head>
 <body>
     <div id="page">
-        <div id = "modal_form">
-            <span id="modal_close">X</span>
-            <p>Add new person</p>
-            <label>Name</label>
-            <input type="text" id = "inputName" pattern ="[A-Za-z]+">
-            <label>Surname</label>
-            <input type="text" id = "inputSurname" required pattern="[A-Za-z]+">
-            <label>Age</label>
-            <input type="number" id = "inputAge" min="0" step="1">
-            <button id ="ADD">ADD</button>
-        </div>
         <div id = "modal_formTwo">
             <span id="modal_close">X</span>
             <div id = "form">
@@ -28,22 +17,48 @@
                 <p id = "infoSurname"></p>
                 <label>Age</label>
                 <p id = "infoAge"></p>
+                <label>Role</label>
+                <p id = infoRole></p>
                 <button id ="Cancel">Cancel</button>
             </div>
         </div>
-        <div id = "modal_formThree">
+        <div id = "modal_formFour">
             <span id="modal_close">X</span>
-            <p>Update person</p>
+            <p>Login In</p>
+            <label>User Name</label>
+            <input type="text" id = "loginUserName" required pattern="[A-Za-z]+">
+            <label>Password</label>
+            <input type="number" id = "passwordLogiIn">
+            <button id ="buttonLoginIn">Login In</button>
+        </div>
+        <div id = "modal_formFive">
+            <span id="modal_close">X</span>
+            <p>Sign Up</p>
             <label>Name</label>
-            <input type="text" id = "updateName" required pattern="[A-Za-z]+">
+            <input type="text" id = "signUpName" required pattern="[A-Za-z]+">
             <label>Surname</label>
-            <input type="text" id = "updateSurname" required pattern="[A-Za-z]+">
+            <input type="text" id = "signUpSurname" required pattern="[A-Za-z]+">
             <label>Age</label>
-            <input type="number" id = "updateAge" min="0" step="1">
-            <button id ="UPDATE">UPDATE</button>
+            <input type="number" id = "signUpAge" min="0" step="1">
+            <label>Password</label>
+            <input type="text" id = "signUpPassword">
+            <label>Confirm Password</label>
+            <input type="text" id = "signUpConfirmPassword">
+            <p id = "areaForError"></p>
+            <select id = "selectRole">
+                <option value="guest">Guest</option>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button id ="buttonSignUp" >Sign Up</button>
         </div>
         <div id="overlay"></div>
         <button id = "buttonNew">New Person</button>
         <button id = "buttonShow">Show All Persons</button>
+    </div>
+    <div id="buttonSignUpLoginIn">
+        <button id = "loginIn">Login In</button>
+        <button id = "signUp">Sign Up</button>
+        <button id = "Exit">Exit</button>
     </div>
 </body>
