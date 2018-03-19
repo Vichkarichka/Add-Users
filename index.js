@@ -145,16 +145,14 @@ $(document).ready(function() {
                     password: valuePassword,
                     role: valueRole
                 },
-                success: function() {
+                success: function(data) {
 
-                    alert("Add person success");
-                    console.log('Successfully connected to the server');
+                    alert("success");
 
                 },
-                error: function() {
+                error: function(data) {
 
-                    alert("Wrong name or surname or age");
-                    console.log('Something went wrong');
+                    alert(data.responseText);
                 }
             });
             $('#modal_formFive')
