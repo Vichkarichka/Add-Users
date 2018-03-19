@@ -65,32 +65,28 @@ app.use('/user/:id', function(req, res, next) {
 
 });
 
-app.use('/user',function(req, res, next) {
-
-	req.checkBody('name', 'name is required').notEmpty().isAlpha();
-    req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
-    req.checkBody('age', 'age is required').notEmpty().isInt();
-    req.checkBody('password','password is required').notEmpty().isLength({min:5, max: 10});
-
-
-    var errors = req.validationErrors();
-    if (errors) {
-        res.status(400).send('Error: ' + errors.message);
-        return;
-    } else {
-    	next();
-    }
-
-});
-
-
 
 app.post('/user', function(req, res) {
     var data = req.body;
     var newHuman = new Human(data.name, data.surname, data.age, id, data.password, data.role);
-		
-		persons.push(newHuman);
-        res.status(200).send(String(id++));
+    req.checkBody('name', 'name is required').notEmpty().isAlpha();
+    req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
+    req.checkBody('age', 'age is required').notEmpty().isInt();
+    req.checkBody('password', 'password is required').notEmpty().isLength({
+        min: 5,
+        max: 10
+    });
+
+        var errors = req.validationErrors();
+    if (errors) {
+        res.status(400).send('Error: ' + errors.message);
+        return;
+    } else {
+    	    persons.push(newHuman);
+    res.status(200).send(String(id++));
+    }
+
+
 
 });
 
@@ -102,16 +98,19 @@ app.post('/user/:id', function(req, res) {
     if (persons[req.params.id]) {
 
         req.checkBody('name', 'name is required').notEmpty().isAlpha();
-         req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
-         req.checkBody('age', 'age is required').notEmpty().isInt();
+        req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
+        req.checkBody('age', 'age is required').notEmpty().isInt();
+        req.checkBody('password', 'password is required').notEmpty().isLength({
+            min: 5,
+            max: 10
+        });
 
 
-         var errors = req.validationErrors();
-         if (errors) {
-             res.status(400).send('Error: ' + errors.message);
-             return;
-         }
-
+        var errors = req.validationErrors();
+        if (errors) {
+            res.status(400).send('Error: ' + errors.message);
+            return;
+        }
         var oldPersons = persons[req.params.id];
         oldPersons.name = data.name;
         oldPersons.surname = data.surname;

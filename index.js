@@ -182,9 +182,6 @@ $(document).ready(function() {
             },
             type: "GET",
             success: function(data) {
-                //data = Object.values(data);
-                // data = Array.from(data);
-                console.log(data);
 
 
                 var tableForPersons = document.createElement('div');
@@ -297,7 +294,7 @@ $(document).ready(function() {
             type: "GET",
             success: function(data) {
 
-            	 modelWindow();
+                modelWindow();
                 $("#signUpName").val(data.name);
                 $("#signUpSurname").val(data.surname);
                 $("#signUpAge").val(data.age);
@@ -330,13 +327,13 @@ $(document).ready(function() {
                 },
                 success: function(data) {
 
-                    //alert(data);
+                    alert(data);
                     console.log('Successfully connected to the server');
 
                 },
                 error: function() {
 
-                    //alert(" Bad update person");
+                    alert(data);
                     console.log('Something went wrong');
                 }
             });
