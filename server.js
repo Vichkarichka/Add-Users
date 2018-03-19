@@ -54,7 +54,6 @@ app.use('/user', function(req, res, next) {
 
     } else {
         res.status(400).send("Wrong");
-        console.log("1");
     }
 
 });
@@ -79,21 +78,19 @@ app.use('/user/:id', function(req, res, next) {
 app.post('/user', function(req, res) {
     var data = req.body;
     var newHuman = new Human(data.name, data.surname, data.age, id, data.password, data.role);
-    req.checkBody('name', 'name is required').notEmpty().isAlpha();
-    req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
-    req.checkBody('age', 'age is required').notEmpty().isInt();
-    req.checkBody('password', 'password is required').notEmpty().isLength({
+    req.checkBody('name', 'Invalid field Name values').notEmpty().isAlpha();
+    req.checkBody('surname', 'Invalid field Surname values').notEmpty().isAlpha();
+    req.checkBody('age', 'Invalid field Age values').notEmpty().isInt();
+    req.checkBody('password', 'Invalid field Password values').notEmpty().isLength({
         min: 5
     });
 
     var errors = req.validationErrors();
     if (errors) {
-        res.status(400).json({
-            message: 'Fail user data'
-
-        });
-        console.log("2");
-        return;
+        for (var i = 0; i < errors.length; i++) {
+            res.status(400).send('Error: ' + errors[i].msg);
+            return;
+        }
     } else {
         persons.push(newHuman);
         res.status(200).send(String(id++));
@@ -108,26 +105,31 @@ app.post('/user/:id', function(req, res) {
     var data = req.body;
     if (persons[req.params.id]) {
 
-        req.checkBody('name', 'name is required').notEmpty().isAlpha();
-        req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
-        req.checkBody('age', 'age is required').notEmpty().isInt();
-
+        req.checkBody('name', 'Invalid field Name values').notEmpty().isAlpha();
+        req.checkBody('surname', 'Invalid field Surname values').notEmpty().isAlpha();
+        req.checkBody('age', 'Invalid field Age values').notEmpty().isInt();
+        req.checkBody('password', 'Invalid field Password values').notEmpty().isLength({
+            min: 5
+        });
 
 
         var errors = req.validationErrors();
         if (errors) {
-            res.status(400).send('Error: ' + errors.message);
-            return;
+            for (var i = 0; i < errors.length; i++) {
+                res.status(400).send('Error: ' + errors[i].msg);
+                return;
+            }
         }
         var oldPersons = persons[req.params.id];
         oldPersons.name = data.name;
         oldPersons.surname = data.surname;
         oldPersons.age = data.age;
-        res.status(200).send("Sucusess");
+        oldPersons.password = data.password;
+        res.status(200).json({message:"Successfully"});
 
     } else {
 
-        res.status(400).send("Fail");
+        res.status(400).send({message:"Fail"});
 
     }
 
@@ -146,7 +148,7 @@ app.post('/loginuser', function(req, res) {
             return;
         }
     }
-    res.status(400).send("Wrong");
+    res.status(400).json({message:"Wrong Name or Password"});;
 
 });
 

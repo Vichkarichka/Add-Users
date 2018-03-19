@@ -75,20 +75,20 @@ $(document).ready(function() {
                 name: valueLoginName,
                 password: valueLoginPassword
             },
-            success: function(result) {
+            success: function(data) {
 
-                console.log(result);
-                headerId = result.id;
-                headerRole = result.role;
+                headerId = data.id;
+                headerRole = data.role;
                 $("#buttonNew").show();
                 $("#buttonShow").show();
                 showButtonForPerson();
+                $('#infTextarea').val("Congratulations, you have successfully entered");
 
             },
-            error: function(result) {
+            error: function(data) {
 
-                alert("Wrong name or surname or age");
-                console.log('Something went wrong');
+                $('#infTextarea').val(data.responseJSON.message);
+
             }
         });
     }
@@ -97,6 +97,7 @@ $(document).ready(function() {
     function showButtonForPerson() {
 
         $('#buttonNew').click(function(event) {
+
             modelWindow();
         });
         $('#buttonShow').click(function(event) {
@@ -147,12 +148,12 @@ $(document).ready(function() {
                 },
                 success: function(data) {
 
-                    alert("success");
+                    $('#infTextarea').val("Registration completed successfully");
 
                 },
                 error: function(data) {
 
-                    alert(data.responseText);
+                    $('#infTextarea').val(data.responseText);
                 }
             });
             $('#modal_formFive')
@@ -300,7 +301,7 @@ $(document).ready(function() {
             },
             error: function(data) {
 
-                alert(data.responseText);
+               $('#infTextarea').val(data.responseText);
                 console.log('Something went wrong');
             }
 
@@ -311,6 +312,7 @@ $(document).ready(function() {
             valueName = $("#signUpName").val();
             valueSurname = $("#signUpSurname").val();
             valueAge = $("#signUpAge").val();
+            valuePassword = $('#signUpPassword').val();
             $.ajax({
                 url: urlPage + targetId,
                 headers: {
@@ -321,18 +323,18 @@ $(document).ready(function() {
                 data: {
                     name: valueName,
                     surname: valueSurname,
-                    age: valueAge
+                    age: valueAge,
+                    password: valuePassword
                 },
                 success: function(data) {
 
-                    //alert(data);
-                    console.log('Successfully connected to the server');
+                    $('#infTextarea').val(data.responseJSON.message);
 
                 },
                 error: function(data) {
 
-                    //alert(data);
-                    console.log('Something went wrong');
+                    $('#infTextarea').val(data.responseJSON.message);
+
                 }
             });
         });
