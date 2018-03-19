@@ -47,10 +47,8 @@ app.use('/user', function(req, res, next) {
 
     var data = req.body;
     arrayNames = persons.map((item) => item.name);
-     var newArrayNames = arrayNames.filter(Boolean);
-    console.log(newArrayNames);
+    var newArrayNames = arrayNames.filter(Boolean);
     var find = newArrayNames.includes(data.name);
-    console.log(find);
     if (find == false) {
         next();
 
@@ -65,7 +63,8 @@ app.use('/user/:id', function(req, res, next) {
 
     var data = req.body;
     arrayNames = persons.map((item) => item.name);
-    var find = arrayNames.includes(data.name);
+    var newArrayNames = arrayNames.filter(Boolean);
+    var find = newArrayNames.includes(data.name);
 
     if (find == false) {
         next();
@@ -93,7 +92,7 @@ app.post('/user', function(req, res) {
             message: 'Fail user data'
 
         });
-                    console.log("2");
+        console.log("2");
         return;
     } else {
         persons.push(newHuman);
