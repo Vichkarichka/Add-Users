@@ -73,17 +73,16 @@ app.post('/user', function(req, res) {
     req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
     req.checkBody('age', 'age is required').notEmpty().isInt();
     req.checkBody('password', 'password is required').notEmpty().isLength({
-        min: 5,
-        max: 10
+        min: 5
     });
 
-        var errors = req.validationErrors();
+    var errors = req.validationErrors();
     if (errors) {
         res.status(400).send('Error: ' + errors.message);
         return;
     } else {
-    	    persons.push(newHuman);
-    res.status(200).send(String(id++));
+        persons.push(newHuman);
+        res.status(200).send(String(id++));
     }
 
 
@@ -91,19 +90,14 @@ app.post('/user', function(req, res) {
 });
 
 app.post('/user/:id', function(req, res) {
+    
     var data = req.body;
-
-
-
     if (persons[req.params.id]) {
 
         req.checkBody('name', 'name is required').notEmpty().isAlpha();
         req.checkBody('surname', 'surname is required').notEmpty().isAlpha();
         req.checkBody('age', 'age is required').notEmpty().isInt();
-        req.checkBody('password', 'password is required').notEmpty().isLength({
-            min: 5,
-            max: 10
-        });
+
 
 
         var errors = req.validationErrors();
@@ -119,6 +113,7 @@ app.post('/user/:id', function(req, res) {
 
     } else {
         res.status(400).send("Fail");
+
     }
 
 
@@ -146,12 +141,14 @@ app.get('/user/:id', function(req, res) {
 
         res.status(403).send("Forbidden");
     }
+    else{
 
     if (persons[req.params.id]) {
         res.status(200).send(persons[req.params.id]);
     } else {
         res.status(400).send("Fail");
     }
+}
 
 
 });

@@ -327,13 +327,13 @@ $(document).ready(function() {
                 },
                 success: function(data) {
 
-                    alert(data);
+                    //alert(data);
                     console.log('Successfully connected to the server');
 
                 },
-                error: function() {
+                error: function(data) {
 
-                    alert(data);
+                    //alert(data);
                     console.log('Something went wrong');
                 }
             });
