@@ -2,7 +2,7 @@ var express = require('express');
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
 var app = express();
-var port = 8082;
+var port = 8081;
 var headerId, headerRole;
 const Role_Admin = "Admin";
 const Role_Guest = "Guest";
@@ -53,6 +53,7 @@ app.use('/user', function(req, res, next) {
         next();
 
     } else {
+    	console.log('1');
         res.status(400).send("Wrong");
     }
 
@@ -69,6 +70,7 @@ app.use('/user/:id', function(req, res, next) {
         next();
 
     } else {
+    	console.log('2');
         res.status(400).send("Wrong");
     }
 
@@ -156,13 +158,14 @@ app.get('/user/:id', function(req, res) {
 
     if (headerRole == Role_Guest) {
 
-        res.status(403).send("Forbidden");
+        res.status(403).json({message:"Sorry, you do not have the rights"});
+
     } else {
 
         if (persons[req.params.id]) {
             res.status(200).send(persons[req.params.id]);
         } else {
-            res.status(400).send("Fail");
+            res.status(400).json({message:"Sorry, something went wrong "});
         }
     }
 
@@ -174,13 +177,13 @@ app.delete('/user/:id', function(req, res) {
         if (persons[req.params.id]) {
             delete persons[req.params.id];
             console.log(arrayNames);
-            res.status(200).send("User delete");
+            res.status(200).json({message:"User deleted"});
         } else {
-            res.status(400).send("Fail");
+            res.status(400).json({message:"Fail"});
 
         }
     } else {
-        res.status(403).send("Forbidden");
+       res.status(403).json({message:"Sorry, you do not have the rights"});
     }
 
 });

@@ -1,5 +1,5 @@
 var valueName, valueSurname, valueAge, valuePassword, valueRole, valueConfirmPasssword;
-var urlPage = "http://localhost:8082/user/";
+var urlPage = "http://localhost:8081/user/";
 var headerId, headerRole;
 
 $(document).ready(function() {
@@ -69,7 +69,7 @@ $(document).ready(function() {
         var valueLoginPassword = $('#passwordLogiIn').val();
 
         $.ajax({
-            url: "http://localhost:8082/loginuser",
+            url: "http://localhost:8081/loginuser",
             type: "POST",
             data: {
                 name: valueLoginName,
@@ -133,7 +133,7 @@ $(document).ready(function() {
 
         if (valuePassword === valueConfirmPasssword) {
             $.ajax({
-                url: "http://localhost:8082/user",
+                url: "http://localhost:8081/user",
                 headers: {
                     'header-id': headerId,
                     'header-role': headerRole
@@ -174,7 +174,7 @@ $(document).ready(function() {
     function getPersonsByServer() {
 
         $.ajax({
-            url: "http://localhost:8082/users",
+            url: "http://localhost:8081/users",
             headers: {
                 'header-id': headerId,
                 'header-role': headerRole
@@ -229,8 +229,7 @@ $(document).ready(function() {
             },
             error: function(data) {
 
-                alert("Wrong name or surname or age");
-                console.log('Something went wrong');
+                $('#infTextarea').val(data.responseJSON.message);
             }
         });
 
@@ -245,15 +244,15 @@ $(document).ready(function() {
                 'header-role': headerRole
             },
             type: 'DELETE',
-            success: function(result) {
+            success: function(data) {
 
-                alert(result);
-                console.log('Successfully connected to the server');
+            	$('#infTextarea').val(data.responseJSON.message);
+
             },
-            error: function(result) {
+            error: function(data) {
 
-                alert(result.responseText);
-                console.log('Error');
+            	$('#infTextarea').val(data.responseJSON.message);
+
             }
         });
     }
@@ -297,12 +296,13 @@ $(document).ready(function() {
                 $("#signUpName").val(data.name);
                 $("#signUpSurname").val(data.surname);
                 $("#signUpAge").val(data.age);
+                $('#infTextarea').val("Update success");
 
             },
             error: function(data) {
 
                $('#infTextarea').val(data.responseText);
-                console.log('Something went wrong');
+
             }
 
         });
