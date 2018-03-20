@@ -87,7 +87,7 @@ $(document).ready(function() {
             },
             error: function(data) {
 
-                $('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(data.message);
 
             }
         });
@@ -221,15 +221,33 @@ $(document).ready(function() {
                         getInfoPersonbyServer(targetId);
                     }
                     if (target.className == 'EditByPerson') {
-                        $('#buttonSignUp').unbind();
+
+                       /* $('#buttons').on('click', '#buttonSignUp', function(){
+                        	$("#buttonSignUp").val("EDIT");
+                        	$("#buttonSignUp").attr("id", "btn2");
+                        });*/
+                            //$('#buttonSignUp').unbind("click", postPersonsToServer);
                         postUpdatePersonToServer(targetId);
+
+
+                       /* $("#buttonParent").on('click', '#btn1', function() {
+                            window.alert("im changing id to btn2 and ho ho ho");
+                            $("#btn1").val("ho ho ho");
+                            $("#btn1").attr("id", "btn2");
+                        });
+
+                        $("#buttonParent").on('click', '#btn2', function() {
+                            window.alert("im changing id to btn1 and hey hey");
+                            $("#btn2").val("hey hey");
+                            $("#btn2").attr("id", "btn1");
+                        });*/
                     }
                 }
 
             },
             error: function(data) {
 
-                $('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(data.message);
             }
         });
 
@@ -246,12 +264,12 @@ $(document).ready(function() {
             type: 'DELETE',
             success: function(data) {
 
-            	$('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(data.message);
 
             },
             error: function(data) {
 
-            	$('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(data.message);
 
             }
         });
@@ -301,7 +319,7 @@ $(document).ready(function() {
             },
             error: function(data) {
 
-               $('#infTextarea').val(data.responseText);
+                $('#infTextarea').val(data.responseText);
 
             }
 
@@ -328,12 +346,13 @@ $(document).ready(function() {
                 },
                 success: function(data) {
 
-                    $('#infTextarea').val(data.responseJSON.message);
+                    $('#infTextarea').val(data.responseText);
+                    //$('#buttonSignUp').bind("click", postPersonsToServer);
 
                 },
                 error: function(data) {
 
-                    $('#infTextarea').val(data.responseJSON.message);
+                    $('#infTextarea').val(data.responseText);
 
                 }
             });

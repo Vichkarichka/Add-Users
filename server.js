@@ -30,10 +30,16 @@ function Human(name, surname, age, id, password, role) {
 var human = new Human();
 
 app.use('/', function(req, res, next) {
+
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
     res.header("Access-Control-Allow-Methods", "*");
-    next();
+    if (req.method != "OPTIONS") {
+        next();
+    }
+    if (req.method == "OPTIONS") {
+        res.send();
+    }
 });
 
 app.use(function(req, res, next) {
@@ -43,7 +49,7 @@ app.use(function(req, res, next) {
     next();
 });
 
-app.use('/user', function(req, res, next) {
+app.post('/user', function(req, res, next) {
 
     var data = req.body;
     arrayNames = persons.map((item) => item.name);
@@ -53,33 +59,14 @@ app.use('/user', function(req, res, next) {
         next();
 
     } else {
-    	console.log('1');
+
         res.status(400).send("Wrong");
     }
 
 });
 
-app.use('/user/:id', function(req, res, next) {
+app.post('/user', function(req, res, next) {
 
-    var data = req.body;
-    arrayNames = persons.map((item) => item.name);
-    var newArrayNames = arrayNames.filter(Boolean);
-    var find = newArrayNames.includes(data.name);
-
-    if (find == false) {
-        next();
-
-    } else {
-    	console.log('2');
-        res.status(400).send("Wrong");
-    }
-
-});
-
-
-app.post('/user', function(req, res) {
-    var data = req.body;
-    var newHuman = new Human(data.name, data.surname, data.age, id, data.password, data.role);
     req.checkBody('name', 'Invalid field Name values').notEmpty().isAlpha();
     req.checkBody('surname', 'Invalid field Surname values').notEmpty().isAlpha();
     req.checkBody('age', 'Invalid field Age values').notEmpty().isInt();
@@ -94,11 +81,17 @@ app.post('/user', function(req, res) {
             return;
         }
     } else {
-        persons.push(newHuman);
-        res.status(200).send(String(id++));
+        next();
     }
 
+});
 
+
+app.post('/user', function(req, res) {
+    var data = req.body;
+    var newHuman = new Human(data.name, data.surname, data.age, id, data.password, data.role);
+    persons.push(newHuman);
+    res.status(200).send(String(id++));
 
 });
 
@@ -107,31 +100,20 @@ app.post('/user/:id', function(req, res) {
     var data = req.body;
     if (persons[req.params.id]) {
 
-        req.checkBody('name', 'Invalid field Name values').notEmpty().isAlpha();
-        req.checkBody('surname', 'Invalid field Surname values').notEmpty().isAlpha();
-        req.checkBody('age', 'Invalid field Age values').notEmpty().isInt();
-        req.checkBody('password', 'Invalid field Password values').notEmpty().isLength({
-            min: 5
-        });
-
-
-        var errors = req.validationErrors();
-        if (errors) {
-            for (var i = 0; i < errors.length; i++) {
-                res.status(400).send('Error: ' + errors[i].msg);
-                return;
-            }
-        }
         var oldPersons = persons[req.params.id];
         oldPersons.name = data.name;
         oldPersons.surname = data.surname;
         oldPersons.age = data.age;
         oldPersons.password = data.password;
-        res.status(200).json({message:"Successfully"});
+        res.status(200).json({
+            message: "Successfully"
+        });
 
     } else {
 
-        res.status(400).send({message:"Fail"});
+        res.status(400).send({
+            message: "Fail"
+        });
 
     }
 
@@ -150,7 +132,9 @@ app.post('/loginuser', function(req, res) {
             return;
         }
     }
-    res.status(400).json({message:"Wrong Name or Password"});;
+    res.status(400).json({
+        message: "Wrong Name or Password"
+    });;
 
 });
 
@@ -158,14 +142,18 @@ app.get('/user/:id', function(req, res) {
 
     if (headerRole == Role_Guest) {
 
-        res.status(403).json({message:"Sorry, you do not have the rights"});
+        res.status(403).json({
+            message: "Sorry, you do not have the rights"
+        });
 
     } else {
 
         if (persons[req.params.id]) {
             res.status(200).send(persons[req.params.id]);
         } else {
-            res.status(400).json({message:"Sorry, something went wrong "});
+            res.status(400).json({
+                message: "Sorry, something went wrong "
+            });
         }
     }
 
@@ -176,14 +164,19 @@ app.delete('/user/:id', function(req, res) {
     if (headerRole == Role_Admin) {
         if (persons[req.params.id]) {
             delete persons[req.params.id];
-            console.log(arrayNames);
-            res.status(200).json({message:"User deleted"});
+            res.status(200).json({
+                message: "User deleted"
+            });
         } else {
-            res.status(400).json({message:"Fail"});
+            res.status(400).json({
+                message: "Fail"
+            });
 
         }
     } else {
-       res.status(403).json({message:"Sorry, you do not have the rights"});
+        res.status(403).json({
+            message: "Sorry, you do not have the rights"
+        });
     }
 
 });
