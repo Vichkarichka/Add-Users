@@ -2,8 +2,9 @@ var express = require('express');
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
 var app = express();
-var port = 8081;
-var headerId, headerRole;
+const port = 8081;
+var headerId;
+var headerRole;
 const Role_Admin = "Admin";
 const Role_Guest = "Guest";
 const Role_User = "User";
@@ -34,10 +35,10 @@ app.use('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
     res.header("Access-Control-Allow-Methods", "*");
-    if (req.method != "OPTIONS") {
+    if (req.method !== "OPTIONS") {
         next();
     }
-    if (req.method == "OPTIONS") {
+    if (req.method === "OPTIONS") {
         res.send();
     }
 });
@@ -55,7 +56,7 @@ app.post('/user', function(req, res, next) {
     arrayNames = persons.map((item) => item.name);
     var newArrayNames = arrayNames.filter(Boolean);
     var find = newArrayNames.includes(data.name);
-    if (find == false) {
+    if (find === false) {
         next();
 
     } else {
@@ -123,7 +124,7 @@ app.post('/loginuser', function(req, res) {
 
     var data = req.body;
     for (var i = 0; i < persons.length; i++) {
-        if (data.name === persons[i].name && data.password == persons[i].password) {
+        if (data.name === persons[i].name && data.password === persons[i].password) {
             res.status(200);
             res.json({
                 'role': persons[i].role,
@@ -134,13 +135,13 @@ app.post('/loginuser', function(req, res) {
     }
     res.status(400).json({
         message: "Wrong Name or Password"
-    });;
+    });
 
 });
 
 app.get('/user/:id', function(req, res) {
 
-    if (headerRole == Role_Guest) {
+    if (headerRole === Role_Guest) {
 
         res.status(403).json({
             message: "Sorry, you do not have the rights"
@@ -161,7 +162,7 @@ app.get('/user/:id', function(req, res) {
 });
 app.delete('/user/:id', function(req, res) {
 
-    if (headerRole == Role_Admin) {
+    if (headerRole === Role_Admin) {
         if (persons[req.params.id]) {
             delete persons[req.params.id];
             res.status(200).json({
@@ -183,7 +184,7 @@ app.delete('/user/:id', function(req, res) {
 
 app.get('/users', function(req, res) {
 
-    if (headerRole == Role_User || headerRole == Role_Guest) {
+    if (headerRole === Role_User || headerRole === Role_Guest) {
 
         res.status(200).send(new Human(persons[headerId]));
 
