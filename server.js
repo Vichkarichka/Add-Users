@@ -178,19 +178,26 @@ app.get('/user/:id', function(req, res) {
 
         res.status(403).json({
             message: "Sorry, you do not have the rights"
+
         });
 
     } else {
 
         connect.getConnection().then(function(conn) {
+
             var resultInfo = conn.query("SELECT * FROM Human WHERE id = ?", req.params.id);
             conn.release(conn);
             return resultInfo;
+
         }).then(function(rows) {
+
             res.status(200).json(rows);
+
         }).catch(function(error) {
+
             res.status(400).json({
                 message: "Sorry, something went wrong "
+
             });
 
         });
@@ -200,17 +207,25 @@ app.get('/user/:id', function(req, res) {
 app.delete('/user/:id', function(req, res) {
 
     if (headerRole === Role_Admin) {
-        if (persons[req.params.id]) {
-            delete persons[req.params.id];
+
+        connect.getConnection().then(function(conn) {
+        	
+            var resultDelete = conn.query("DELETE FROM Human WHERE id = ?", req.params.id);
+            conn.release(conn);
+            return resultDelete;
+
+        }).then(function(rows) {
+        	console.log(rows);
             res.status(200).json({
-                message: "User deleted"
+                message: "User delete",
             });
-        } else {
+
+        }).catch(function(error) {
+
             res.status(400).json({
                 message: "Fail"
             });
-
-        }
+        });
     } else {
         res.status(403).json({
             message: "Sorry, you do not have the rights"
@@ -224,26 +239,38 @@ app.get('/users', function(req, res) {
     if (headerRole === Role_User || headerRole === Role_Guest) {
 
         connect.getConnection().then(function(conn) {
+
             var resultShow = conn.query("SELECT * FROM Human WHERE id = ?", headerId);
             conn.release(conn);
             return resultShow;
+
         }).then(function(rows) {
+
             res.status(200).send(rows);
+
         }).catch(function(error) {
+
             res.status(400).json({
                 message: "Sorry, something went wrong ",
+
             });
         });
     } else {
         connect.getConnection().then(function(conn) {
+
             var resultShow = conn.query("SELECT * FROM Human");
             conn.release(conn);
             return resultShow;
+
         }).then(function(rows) {
+
             res.status(200).send(rows);
+
         }).catch(function(error) {
+
             res.status(400).json({
                 message: "Sorry, something went wrong ",
+
             });
         });
     }
