@@ -18,7 +18,7 @@ opacity: 0;
 z-index: 5;
 padding: 20px 10px;
 }
-#modal_formFive {
+#modal_formFive , #modal_formEdit{
 	width: 200px;
 height: 300px;
 border-radius: 5px;

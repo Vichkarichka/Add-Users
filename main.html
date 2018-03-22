@@ -56,6 +56,29 @@
                 <input type="button" value="Sign Up" id ="buttonSignUp">
                 </div>
             </div>
+             <div id = "modal_formEdit">
+                <span id="modal_close">X</span>
+                <p>Edit</p>
+                <label>Name</label>
+                <input type="text" id = "EditName" required pattern="[A-Za-z]+">
+                <label>Surname</label>
+                <input type="text" id = "EditSurname" required pattern="[A-Za-z]+">
+                <label>Age</label>
+                <input type="number" id = "EditAge" min="0" step="1">
+                <label>Password</label>
+                <input type="text" id = "EditPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                <label>Confirm Password</label>
+                <input type="text" id = "EditConfirmPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                <p id = "areaForError"></p>
+                <select id = "selectRole">
+                    <option value="guest">Guest</option>
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <div id = buttons>
+                <input type="button" value="Edit" id ="buttonEdit">
+                </div>
+            </div>
             <div id="overlay"></div>
             <button id = "buttonNew">New Person</button>
             <button id = "buttonShow">Show All Persons</button>

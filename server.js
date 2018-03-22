@@ -1,6 +1,10 @@
 var express = require('express');
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
+//var database = require('./database');
+var mysql = require('promise-mysql');
+
+
 var app = express();
 const port = 8081;
 var headerId;
@@ -9,6 +13,9 @@ const Role_Admin = "Admin";
 const Role_Guest = "Guest";
 const Role_User = "User";
 var arrayNames;
+var row;
+
+
 
 app.use(bodyParser.json());
 app.use(expressValidator());
@@ -16,19 +23,35 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+var connect = mysql.createPool({
+    host: 'localhost',
+    user: 'root',
+    password: 'root',
+    database: 'Users',
+    connectionLimit: 100,
 
-var persons = [];
-var id = 0;
+});
 
-function Human(name, surname, age, id, password, role) {
-    this.name = name;
-    this.surname = surname;
-    this.age = age;
-    this.password = password;
-    this.role = role;
-    this.id = id;
+
+function pushDataToDataBase(name, surname, age, password, role) {
+
+    var people = {
+        nameuser: name,
+        surnameuser: surname,
+        age: age,
+        password: password,
+        role: role,
+    };
+    connect.getConnection().then(function(conn) {
+
+        var result = conn.query("INSERT INTO Human SET ?", people, function(err, result, fields) {
+            if (err) throw err;
+            conn.release(conn);
+        });
+    });
 }
-var human = new Human();
+
+
 
 app.use('/', function(req, res, next) {
 
@@ -53,17 +76,19 @@ app.use(function(req, res, next) {
 app.post('/user', function(req, res, next) {
 
     var data = req.body;
-    arrayNames = persons.map((item) => item.name);
-    var newArrayNames = arrayNames.filter(Boolean);
-    var find = newArrayNames.includes(data.name);
-    if (find === false) {
-        next();
 
-    } else {
+    connect.getConnection().then(function(conn) {
+        var resultName = conn.query("SELECT nameuser FROM Human WHERE nameuser = ? ", data.name);
+        conn.release(conn);
+        return resultName;
+    }).then(function(rows) {
 
-        res.status(400).send("Wrong");
-    }
-
+        if (rows.length === 0) {
+            return next();
+        } else {
+            res.status(400).send("Wrong");
+        }
+    });
 });
 
 app.post('/user', function(req, res, next) {
@@ -90,9 +115,8 @@ app.post('/user', function(req, res, next) {
 
 app.post('/user', function(req, res) {
     var data = req.body;
-    var newHuman = new Human(data.name, data.surname, data.age, id, data.password, data.role);
-    persons.push(newHuman);
-    res.status(200).send(String(id++));
+    pushDataToDataBase(data.name, data.surname, data.age, data.password, data.role);
+    res.status(200).send("Successfully");
 
 });
 
@@ -123,20 +147,29 @@ app.post('/user/:id', function(req, res) {
 app.post('/loginuser', function(req, res) {
 
     var data = req.body;
-    for (var i = 0; i < persons.length; i++) {
-        if (data.name === persons[i].name && data.password === persons[i].password) {
-            res.status(200);
-            res.json({
-                'role': persons[i].role,
-                'id': persons[i].id
-            });
-            return;
-        }
-    }
-    res.status(400).json({
-        message: "Wrong Name or Password"
-    });
 
+    connect.getConnection().then(function(conn) {
+
+        var resultLogin = conn.query("SELECT nameuser, password, role, id FROM Human WHERE nameuser = ? AND password = ?", [data.name, data.password]);
+        conn.release(conn);
+        return resultLogin;
+    }).then(function(rows) {
+        if (rows.length === 0) {
+            res.status(400).send("Wrong");
+        } else {
+            Object.keys(rows).forEach(function(key) {
+                var row = rows[key];
+                res.status(200);
+                res.json({
+                    'role': row.role,
+                    'id': row.id,
+                });
+                return;
+            });
+        }
+    }).catch(function(error) {
+        console.log(error);
+    });
 });
 
 app.get('/user/:id', function(req, res) {
@@ -149,17 +182,21 @@ app.get('/user/:id', function(req, res) {
 
     } else {
 
-        if (persons[req.params.id]) {
-            res.status(200).send(persons[req.params.id]);
-        } else {
+        connect.getConnection().then(function(conn) {
+            var resultInfo = conn.query("SELECT * FROM Human WHERE id = ?", req.params.id);
+            conn.release(conn);
+            return resultInfo;
+        }).then(function(rows) {
+            res.status(200).json(rows);
+        }).catch(function(error) {
             res.status(400).json({
                 message: "Sorry, something went wrong "
             });
-        }
+
+        });
     }
-
-
 });
+
 app.delete('/user/:id', function(req, res) {
 
     if (headerRole === Role_Admin) {
@@ -186,13 +223,29 @@ app.get('/users', function(req, res) {
 
     if (headerRole === Role_User || headerRole === Role_Guest) {
 
-        res.status(200).send(new Human(persons[headerId]));
-
+        connect.getConnection().then(function(conn) {
+            var resultShow = conn.query("SELECT * FROM Human WHERE id = ?", headerId);
+            conn.release(conn);
+            return resultShow;
+        }).then(function(rows) {
+            res.status(200).send(rows);
+        }).catch(function(error) {
+            res.status(400).json({
+                message: "Sorry, something went wrong ",
+            });
+        });
     } else {
-
-        res.status(200).send(persons);
-
-
+        connect.getConnection().then(function(conn) {
+            var resultShow = conn.query("SELECT * FROM Human");
+            conn.release(conn);
+            return resultShow;
+        }).then(function(rows) {
+            res.status(200).send(rows);
+        }).catch(function(error) {
+            res.status(400).json({
+                message: "Sorry, something went wrong ",
+            });
+        });
     }
 
 });

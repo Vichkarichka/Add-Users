@@ -13,11 +13,11 @@ $(document).ready(function() {
     $('#buttonShow').hide();
     $('#Exit').hide();
 
-    $('#modal_close, #overlay, #ADD, #Cancel,#UPDATE, #buttonLoginIn').click(function() {
-        $('#modal_formTwo, #modal_formThree, #modal_formFour, #modal_formFive')
+    $('#modal_close, #overlay, #ADD, #Cancel, #UPDATE, #buttonLoginIn, #buttonEdit').click(function() {
+        $('#modal_formTwo, #modal_formThree, #modal_formFour, #modal_formFive, #modal_formEdit')
             .animate({
                     opacity: 0,
-                    top: '45%',
+                    top: '45%'
                 }, 200,
                 function() {
                     $(this).css('display', 'none');
@@ -35,14 +35,13 @@ $(document).ready(function() {
                     .css('display', 'block')
                     .animate({
                         opacity: 1,
-                        top: '50%',
+                        top: '50%'
                     }, 200);
             }
         );
     });
     $('#signUp').click(function() {
         modelWindow();
-
     });
     $('#buttonLoginIn').click(function() {
         $('#loginIn').hide();
@@ -51,7 +50,7 @@ $(document).ready(function() {
         postLoginPersonToServer();
     });
 
-    $('#buttonSignUp').click(function () {
+    $('#buttonSignUp').click(function() {
         postPersonsToServer();
     });
     $('#Exit').click(function() {
@@ -72,7 +71,7 @@ $(document).ready(function() {
             type: 'POST',
             data: {
                 name: valueLoginName,
-                password: valueLoginPassword,
+                password: valueLoginPassword
             },
             success: function(data) {
                 headerId = data.id;
@@ -108,13 +107,14 @@ $(document).ready(function() {
                     .css('display', 'block')
                     .animate({
                         opacity: 1,
-                        top: '50%',
+                        top: '50%'
                     }, 200);
             }
         );
     }
 
     function postPersonsToServer() {
+
         valueName = $('#signUpName').val();
         valueSurname = $('#signUpSurname').val();
         valueAge = $('#signUpAge').val();
@@ -127,7 +127,7 @@ $(document).ready(function() {
                 url: 'http://localhost:8081/user',
                 headers: {
                     'header-id': headerId,
-                    'header-role': headerRole,
+                    'header-role': headerRole
                 },
                 type: 'POST',
                 data: {
@@ -145,9 +145,9 @@ $(document).ready(function() {
                 }
             });
             $('#modal_formFive')
-                .animate( {
+                .animate({
                         opacity: 0,
-                        top: '45%',
+                        top: '45%'
                     }, 200,
                     function() {
                         $(this).css('display', 'none');
@@ -160,11 +160,11 @@ $(document).ready(function() {
     }
 
     function getPersonsByServer() {
-        $.ajax( {
+        $.ajax({
             url: 'http://localhost:8081/users',
             headers: {
                 'header-id': headerId,
-                'header-role': headerRole,
+                'header-role': headerRole
             },
             type: 'GET',
             success: function(data) {
@@ -178,7 +178,7 @@ $(document).ready(function() {
                 $.each(data, function(index, value) {
                     if (value !== null) {
                         var tr = document.createElement('tr');
-                        tr.innerHTML = '<td>' + value.name + '</td>' +
+                        tr.innerHTML = '<td>' + value.nameuser + '</td>' +
                             '<button class="EditByPerson">Edit</button>' +
                             '<button class="info">Info</button>' +
                             '<button class="del">Delete</button>';
@@ -203,9 +203,7 @@ $(document).ready(function() {
                     }
                     if (target.className == 'EditByPerson') {
 
-                        $('#buttonSignUp').unbind("click", postPersonsToServer);
                         postUpdatePersonToServer(targetId);
-
                     }
                 };
             },
@@ -217,11 +215,11 @@ $(document).ready(function() {
 
 
     function deletePersonByServer(targetId) {
-        $.ajax( {
+        $.ajax({
             url: urlPage + targetId,
             headers: {
                 'header-id': headerId,
-                'header-role': headerRole,
+                'header-role': headerRole
             },
             type: 'DELETE',
             success: function(data) {
@@ -243,16 +241,16 @@ $(document).ready(function() {
                     .css('display', 'block')
                     .animate({
                         opacity: 1,
-                        top: '50%',
+                        top: '50%'
                     }, 200);
             }
         );
 
         $.get(urlPage + targetId, function(data) {
-            $('#infoName').text(data.name);
-            $('#infoSurname').text(data.surname);
-            $('#infoAge').text(data.age);
-            $('#infoRole').text(data.role);
+            $('#infoName').text(data[0].nameuser);
+            $('#infoSurname').text(data[0].surnameuser);
+            $('#infoAge').text(data[0].age);
+            $('#infoRole').text(data[0].role);
         });
     }
 
@@ -261,15 +259,27 @@ $(document).ready(function() {
             url: urlPage + targetId,
             headers: {
                 'header-id': headerId,
-                'header-role': headerRole,
+                'header-role': headerRole
             },
             type: 'GET',
             success: function(data) {
-                modelWindow();
-                $('#signUpName').val(data.name);
-                $('#signUpSurname').val(data.surname);
-                $('#signUpAge').val(data.age);
-                $('#infTextarea').val('Update success');
+                event.preventDefault();
+                $('#overlay').fadeIn(
+                    400,
+                    function() {
+                        $('#modal_formEdit')
+                            .css('display', 'block')
+                            .animate({
+                                opacity: 1,
+                                top: '50%'
+                            }, 200);
+                    }
+                );
+                $('#EditName').val(data.name);
+                $('#EditSurname').val(data.surname);
+                $('#EditAge').val(data.age);
+                $('#EditPassword').val(data.password);
+
             },
             error: function(data) {
                 $('#infTextarea').val(data.responseText);
@@ -277,27 +287,27 @@ $(document).ready(function() {
 
         });
 
-        $('#buttonSignUp').click(function(event) {
-            valueName = $('#signUpName').val();
-            valueSurname = $('#signUpSurname').val();
-            valueAge = $('#signUpAge').val();
-            valuePassword = $('#signUpPassword').val();
+        $('#buttonEdit').click(function(event) {
+            valueName = $('#EditName').val();
+            valueSurname = $('#EditSurname').val();
+            valueAge = $('#EditAge').val();
+            valuePassword = $('#EditPassword').val();
             $.ajax({
                 url: urlPage + targetId,
                 headers: {
                     'header-id': headerId,
-                    'header-role': headerRole,
+                    'header-role': headerRole
                 },
                 type: 'POST',
                 data: {
                     name: valueName,
                     surname: valueSurname,
                     age: valueAge,
-                    password: valuePassword,
+                    password: valuePassword
                 },
                 success: function(data) {
-                    $('#infTextarea').val(data.responseText);
-                    $('#buttonSignUp').bind("click", postPersonsToServer);
+                    $('#infTextarea').val('Update success');
+
                 },
                 error: function(data) {
                     $('#infTextarea').val(data.responseText);
