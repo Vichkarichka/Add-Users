@@ -245,7 +245,7 @@ app.delete('/user/:id', function(req, res) {
             });
         }).catch(function(error) {
             res.status(400).json({
-                message: "Fail"
+                message: "User already deleted"
             });
         });
     } else {

@@ -229,7 +229,7 @@ $(document).ready(function() {
                 $('#infTextarea').val(data.message);
             },
             error: function(data) {
-                $('#infTextarea').val(data.message);
+                $('#infTextarea').val(data.responseJSON.message);
             }
         });
     }
