@@ -24,7 +24,7 @@ var connect = mysql.createPool({
     user: 'root',
     password: 'root',
     database: 'Users',
-    connectionLimit: 100,
+    connectionLimit: 20,
 });
 
 function pushDataToDataBase(name, surname, age, password, role) {
@@ -76,7 +76,6 @@ app.post('/user', function(req, res, next) {
         conn.release(conn);
         return resultName;
     }).then(function(rows) {
-        	console.log(rows);
         if (rows.length === 0) {
             return next();
         } else {
@@ -170,7 +169,7 @@ app.post('/loginuser', function(req, res) {
 
         if (rows.length === 0) {
             res.status(400).json({
-            	message: "Wrong Name or password"
+                message: "Wrong Name or password"
             });
         } else {
             Object.keys(rows).forEach(function(key) {
@@ -185,7 +184,7 @@ app.post('/loginuser', function(req, res) {
         }
     }).catch(function(error) {
         res.status(400).json({
-        	message: "Sorry, something went wrong"
+            message: "Sorry, something went wrong"
         });
     });
 });
@@ -196,6 +195,26 @@ app.get('/user/:id', function(req, res) {
         res.status(403).json({
             message: "Sorry, you do not have the rights"
         });
+    }
+    if (headerRole === Role_User) {
+        if (headerId === req.params.id) {
+            connect.getConnection().then(function(conn) {
+                var sql = "SELECT nameuser, surnameuser, age, password, role, id FROM Human WHERE id = ?";
+                var resultInfo = conn.query(sql, req.params.id);
+                conn.release(conn);
+                return resultInfo;
+            }).then(function(rows) {
+                res.status(200).json(rows);
+            }).catch(function(error) {
+                res.status(400).json({
+                    message: "Sorry, something went wrong"
+                });
+            });
+        } else {
+            res.status(403).json({
+                message: "Sorry, you do not have the rights"
+            });
+        }
     } else {
         connect.getConnection().then(function(conn) {
             var sql = "SELECT nameuser, surnameuser, age, password, role, id FROM Human WHERE id = ?";
@@ -221,7 +240,6 @@ app.delete('/user/:id', function(req, res) {
             conn.release(conn);
             return resultDelete;
         }).then(function(rows) {
-            console.log(rows);
             res.status(200).json({
                 message: "User delete",
             });
@@ -239,7 +257,7 @@ app.delete('/user/:id', function(req, res) {
 
 app.get('/users', function(req, res) {
 
-    if (headerRole === Role_User || headerRole === Role_Guest) {
+    if (headerRole === Role_Guest) {
         connect.getConnection().then(function(conn) {
             var sql = "SELECT nameuser, surnameuser, age, password, role, id FROM Human WHERE id = ?";
             var resultShow = conn.query(sql, headerId);
