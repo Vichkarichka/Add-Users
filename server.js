@@ -143,28 +143,28 @@ app.post('/user', function(req, res) {
 app.post('/user/:id', function(req, res) {
 
     var data = req.body;
+    var sql = "UPDATE Human SET nameuser = ?, surnameuser = ?, age = ?, password = ?, role = ? WHERE id = ?";
+    var dataPersons = [data.name, data.surname, data.age, data.password, data.role, req.params.id];
 
-    if (persons[req.params.id]) {
+    connect.getConnection().then(function(conn) {
 
-        var oldPersons = persons[req.params.id];
-        oldPersons.name = data.name;
-        oldPersons.surname = data.surname;
-        oldPersons.age = data.age;
-        oldPersons.password = data.password;
+        var resultUpdate = conn.query(sql, dataPersons);
+        conn.release(conn);
+        return resultUpdate;
+
+    }).then(function(rows) {
 
         res.status(200).json({
             message: "Successfully"
 
         });
+    }).catch(function(error) {
 
-    } else {
-
-        res.status(400).send({
+        res.status(400).json({
             message: "Fail"
 
         });
-    }
-
+    });
 });
 
 app.post('/loginuser', function(req, res) {

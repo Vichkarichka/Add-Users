@@ -275,10 +275,11 @@ $(document).ready(function() {
                             }, 200);
                     }
                 );
-                $('#EditName').val(data.name);
-                $('#EditSurname').val(data.surname);
-                $('#EditAge').val(data.age);
-                $('#EditPassword').val(data.password);
+                $('#EditName').val(data[0].nameuser);
+                $('#EditSurname').val(data[0].surnameuser);
+                $('#EditAge').val(data[0].age);
+                $('#EditPassword').val(data[0].password);
+                $('#selectEditRole option:selected').val(data[0].role)
 
             },
             error: function(data) {
@@ -292,6 +293,7 @@ $(document).ready(function() {
             valueSurname = $('#EditSurname').val();
             valueAge = $('#EditAge').val();
             valuePassword = $('#EditPassword').val();
+            valueRole = $('#selectEditRole option:selected').text();
             $.ajax({
                 url: urlPage + targetId,
                 headers: {
@@ -303,7 +305,8 @@ $(document).ready(function() {
                     name: valueName,
                     surname: valueSurname,
                     age: valueAge,
-                    password: valuePassword
+                    password: valuePassword,
+                    role: valueRole,
                 },
                 success: function(data) {
                     $('#infTextarea').val('Update success');
