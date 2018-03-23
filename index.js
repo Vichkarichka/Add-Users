@@ -40,9 +40,11 @@ $(document).ready(function() {
             }
         );
     });
+
     $('#signUp').click(function() {
         modelWindow();
     });
+
     $('#buttonLoginIn').click(function() {
         $('#loginIn').hide();
         $('#signUp').hide();
@@ -53,6 +55,7 @@ $(document).ready(function() {
     $('#buttonSignUp').click(function() {
         postPersonsToServer();
     });
+
     $('#Exit').click(function() {
         $('#loginIn').show();
         $('#signUp').show();
@@ -87,11 +90,11 @@ $(document).ready(function() {
         });
     }
 
-
     function showButtonForPerson() {
         $('#buttonNew').click(function() {
             modelWindow();
         });
+
         $('#buttonShow').click(function() {
             getPersonsByServer();
         });
@@ -114,7 +117,6 @@ $(document).ready(function() {
     }
 
     function postPersonsToServer() {
-
         valueName = $('#signUpName').val();
         valueSurname = $('#signUpSurname').val();
         valueAge = $('#signUpAge').val();
@@ -144,6 +146,7 @@ $(document).ready(function() {
                     $('#infTextarea').val(data.responseText);
                 }
             });
+
             $('#modal_formFive')
                 .animate({
                         opacity: 0,
@@ -213,7 +216,6 @@ $(document).ready(function() {
         });
     }
 
-
     function deletePersonByServer(targetId) {
         $.ajax({
             url: urlPage + targetId,
@@ -230,7 +232,6 @@ $(document).ready(function() {
             }
         });
     }
-
 
     function getInfoPersonbyServer(targetId) {
         event.preventDefault();
@@ -283,7 +284,7 @@ $(document).ready(function() {
 
             },
             error: function(data) {
-                $('#infTextarea').val(data.responseText);
+                $('#infTextarea').val(data.responseJSON.message);
             }
 
         });
