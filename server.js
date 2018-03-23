@@ -76,8 +76,29 @@ app.post('/user', function(req, res, next) {
         conn.release(conn);
         return resultName;
     }).then(function(rows) {
-
+        	console.log(rows);
         if (rows.length === 0) {
+            return next();
+        } else {
+            res.status(400).send("Wrong");
+        }
+    }).catch(function(error) {
+        res.status(400).json({
+            message: "Sorry, something went wrong ",
+        });
+    });
+});
+
+app.post('/user/:id', function(req, res, next) {
+    var data = req.body;
+
+    connect.getConnection().then(function(conn) {
+        var sql = "SELECT nameuser, id FROM Human WHERE nameuser = ?";
+        var resultName = conn.query(sql, data.name);
+        conn.release(conn);
+        return resultName;
+    }).then(function(rows) {
+        if (rows.length === 0 || rows[0].id === parseInt(req.params.id)) {
             return next();
         } else {
             res.status(400).send("Wrong");
@@ -148,7 +169,9 @@ app.post('/loginuser', function(req, res) {
     }).then(function(rows) {
 
         if (rows.length === 0) {
-            res.status(400).send("Wrong");
+            res.status(400).json({
+            	message: "Wrong Name or password"
+            });
         } else {
             Object.keys(rows).forEach(function(key) {
                 var row = rows[key];
@@ -161,7 +184,9 @@ app.post('/loginuser', function(req, res) {
             });
         }
     }).catch(function(error) {
-        res.status(400).send("Wrong");
+        res.status(400).json({
+        	message: "Sorry, something went wrong"
+        });
     });
 });
 

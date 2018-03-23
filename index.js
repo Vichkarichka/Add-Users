@@ -57,6 +57,7 @@ $(document).ready(function() {
     });
 
     $('#Exit').click(function() {
+    	$('#infTextarea').val("Sign up or Login in to enter");
         $('#loginIn').show();
         $('#signUp').show();
         $('#Exit').hide();
@@ -85,7 +86,7 @@ $(document).ready(function() {
                 $('#infTextarea').val('Congratulations, you have successfully entered');
             },
             error: function(data) {
-                $('#infTextarea').val(data.message);
+                $('#infTextarea').val(data.responseJSON.message);
             }
         });
     }
