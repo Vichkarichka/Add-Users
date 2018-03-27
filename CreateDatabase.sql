@@ -9,5 +9,11 @@ CREATE TABLE `Human` (
   `age` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+CREATE TABLE `LoginUsershash` (
+  `Userid` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `timestamp` bigint(8) NOT NULL,
+  PRIMARY KEY (`Userid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 
