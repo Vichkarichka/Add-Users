@@ -9,6 +9,20 @@ var headerId;
 var headerRole;
 var headerHash;
 
+const objERROR = {
+	USER_LOGIN_ERROR: "Incorrect login or password. Try again",
+	USER_CREATE_ERROR: "User with this name exists.",
+	USER_INFO_ERROR: "User is not find",
+	USER_UPDATE_ERROR: "User can not update",
+	USER_RIGTHS_ERROR: "Sorry, you do not have the rights",
+	USER_DELETE_ERROR: "User already delete",
+	TIMESTAMP_TIMEOUT: "The session is over, please re-login",
+	INVALID_TOKEN: "The session is not find,please re-login",
+	TOKEN_INSERT_ERROR: "Can not insert session, please re-login",
+	TOKEN_UPDATE_ERROR: "Can not refresh session,please re-login",
+	CONNECT_ERROR: "Try again",
+};
+
 $(document).ready(function() {
     $('#buttonNew').hide();
     $('#buttonShow').hide();
@@ -79,8 +93,6 @@ $(document).ready(function() {
                 password: valueLoginPassword
             },
             success: function(data) {
-                //headerId = data.id;
-                //headerRole = data.role;
                 headerHash = data.hash;
                 $('#buttonNew').show();
                 $('#buttonShow').show();
@@ -88,7 +100,7 @@ $(document).ready(function() {
                 $('#infTextarea').val('Congratulations, you have successfully entered');
             },
             error: function(data) {
-                $('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
         });
     }
@@ -131,8 +143,6 @@ $(document).ready(function() {
             $.ajax({
                 url: 'http://localhost:8081/user',
                 headers: {
-                    //'header-id': headerId,
-                    //'header-role': headerRole
                     'header-hash': headerHash,
                 },
                 type: 'POST',
@@ -147,7 +157,7 @@ $(document).ready(function() {
                     $('#infTextarea').val('Registration completed successfully');
                 },
                 error: function(data) {
-                    $('#infTextarea').val(data.responseText);
+                    $('#infTextarea').val(objERROR[data.responseJSON.message]);
                 }
             });
 
@@ -170,8 +180,6 @@ $(document).ready(function() {
         $.ajax({
             url: 'http://localhost:8081/users',
             headers: {
-                //'header-id': headerId,
-                //'header-role': headerRole
                 'header-hash': headerHash,
             },
             type: 'GET',
@@ -216,7 +224,7 @@ $(document).ready(function() {
                 };
             },
             error: function(data) {
-                $('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
         });
     }
@@ -232,7 +240,7 @@ $(document).ready(function() {
                 $('#infTextarea').val(data.message);
             },
             error: function(data) {
-                $('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
         });
     }
@@ -264,23 +272,15 @@ $(document).ready(function() {
                 $('#infoRole').text(data[0].role);
             },
             error: function(data) {
-                $('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
         });
-        /* $.get(urlPage + targetId, function(data) {
-             $('#infoName').text(data[0].nameuser);
-             $('#infoSurname').text(data[0].surnameuser);
-             $('#infoAge').text(data[0].age);
-             $('#infoRole').text(data[0].role);
-         });*/
     }
 
     function postUpdatePersonToServer(targetId) {
         $.ajax({
             url: urlPage + targetId,
             headers: {
-                //'header-id': headerId,
-                //'header-role': headerRole
                 'header-hash': headerHash,
             },
             type: 'GET',
@@ -305,7 +305,7 @@ $(document).ready(function() {
 
             },
             error: function(data) {
-                $('#infTextarea').val(data.responseJSON.message);
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
 
         });
@@ -319,8 +319,6 @@ $(document).ready(function() {
             $.ajax({
                 url: urlPage + targetId,
                 headers: {
-                    //'header-id': headerId,
-                    //'header-role': headerRole
                     'header-hash': headerHash,
                 },
                 type: 'POST',
@@ -336,7 +334,7 @@ $(document).ready(function() {
 
                 },
                 error: function(data) {
-                    $('#infTextarea').val(data.responseText);
+                    $('#infTextarea').val(objERROR[data.responseJSON.message]);
                 }
             });
         });

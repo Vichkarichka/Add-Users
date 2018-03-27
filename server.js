@@ -48,8 +48,8 @@ function pushDataToDataBase(name, surname, age, password, role) {
             conn.release(conn);
         });
     }).catch(function(error) {
-        res.status(400).json({
-            message: "Sorry, something went wrong ",
+        res.status(422).json({
+            message: "USER_CREATE_ERROR",
         });
     });
 }
@@ -81,8 +81,8 @@ function checkTokenForDataBase(req, res, next) {
         return resultTimestamp;
     }).then(function(rows) {
         if (rows.length === 0) {
-            res.status(400).json({
-                message: "Bad token",
+            res.status(404).json({
+                message: "INVALID_TOKEN",
             });
         } else {
             Object.keys(rows).forEach(function(key) {
@@ -93,28 +93,28 @@ function checkTokenForDataBase(req, res, next) {
                     conn.release(conn);
                     return resultRole;
                 }).then(function(rows) {
-                	Object.keys(rows).forEach(function(key) {
-                		var row = rows[key];
-                		headerRole = row.role;
-                		headerId = row.id;
-                	});
+                    Object.keys(rows).forEach(function(key) {
+                        var row = rows[key];
+                        headerRole = row.role;
+                        headerId = row.id;
+                    });
                 }).catch(function(error) {
-                    res.status(400).json({
-                        message: "Sorry, something went wrong ",
+                    res.status(404).json({
+                        message: "USER_INFO_ERROR",
                     });
                 });
                 if (row.timestamp > Date.now()) {
                     next();
                 } else {
-                    res.status(400).json({
-                        message: "timestamp is over",
+                    res.status(403).json({
+                        message: "TIMESTAMP_TIMEOUT",
                     });
                 }
             });
         }
     }).catch(function(error) {
-        res.status(400).json({
-            message: "Sorry, something went wrong ",
+        res.status(404).json({
+            message: "INVALID_TOKEN",
         });
     });
 }
@@ -131,11 +131,13 @@ app.post('/user', function(req, res, next) {
         if (rows.length === 0) {
             return next();
         } else {
-            res.status(400).send("Wrong");
+            res.status(409).json({
+                message: "USER_CREATE_ERROR",
+            });
         }
     }).catch(function(error) {
-        res.status(400).json({
-            message: "Sorry, something went wrong ",
+        res.status(404).json({
+            message: "USER_INFO_ERROR",
         });
     });
 });
@@ -152,11 +154,13 @@ app.post('/user/:id', function(req, res, next) {
         if (rows.length === 0 || rows[0].id === parseInt(req.params.id)) {
             return next();
         } else {
-            res.status(400).send("Wrong");
+            res.status(409).json({
+                message: "USER_CREATE_ERROR",
+            });
         }
     }).catch(function(error) {
-        res.status(400).json({
-            message: "Sorry, something went wrong ",
+        res.status(404).json({
+            message: "USER_INFO_ERROR",
         });
     });
 });
@@ -184,9 +188,8 @@ app.post('/user', function(req, res, next) {
 
 app.post('/user', function(req, res) {
     var data = req.body;
-
     pushDataToDataBase(data.name, data.surname, data.age, data.password, data.role);
-    res.status(200).send("Successfully");
+    res.status(201).send("Successfully");
 });
 
 app.post('/user/:id', checkTokenForDataBase, function(req, res) {
@@ -203,8 +206,8 @@ app.post('/user/:id', checkTokenForDataBase, function(req, res) {
             message: "Successfully"
         });
     }).catch(function(error) {
-        res.status(400).json({
-            message: "Fail"
+        res.status(406).json({
+            message: "USER_UPDATE_ERROR"
         });
     });
 });
@@ -219,8 +222,8 @@ app.post('/loginuser', function(req, res) {
         return resultLogin;
     }).then(function(rows) {
         if (rows.length === 0) {
-            res.status(400).json({
-                message: "Wrong Name or password"
+            res.status(406).json({
+                message: "USER_LOGIN_ERROR"
             });
         } else {
             Object.keys(rows).forEach(function(key) {
@@ -249,8 +252,8 @@ app.post('/loginuser', function(req, res) {
                             });
                             return;
                         }).catch(function(error) {
-                            res.status(400).json({
-                                message: "Sorry, something went wrong 1"
+                            res.status(406).json({
+                                message: "TOKEN_INSERT_ERROR"
                             });
                         });
                     } else {
@@ -267,14 +270,14 @@ app.post('/loginuser', function(req, res) {
                                 'hash': tokenForLogin,
                             });
                         }).catch(function(error) {
-                            res.status(400).json({
-                                message: "Fail"
+                            res.status(406).json({
+                                message: "TOKEN_UPDATE_ERROR"
                             });
                         });
                     }
                 }).catch(function(error) {
                     res.status(400).json({
-                        message: "Sorry, something went wrong 1"
+                        message: "CONNECT_ERROR"
                     });
 
                 });
@@ -282,16 +285,16 @@ app.post('/loginuser', function(req, res) {
         }
     }).catch(function(error) {
         res.status(400).json({
-            message: "Sorry, something went wrong 2"
+            message: "CONNECT_ERROR"
         });
     });
 });
 
 app.get('/user/:id', checkTokenForDataBase, function(req, res) {
-	console.log(headerRole);
+
     if (headerRole === Role_Guest) {
         res.status(403).json({
-            message: "Sorry, you do not have the rights"
+            message: "USER_RIGTHS_ERROR"
         });
     }
     if (headerRole === Role_User) {
@@ -304,13 +307,13 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
             }).then(function(rows) {
                 res.status(200).json(rows);
             }).catch(function(error) {
-                res.status(400).json({
-                    message: "Sorry, something went wrong"
+                res.status(406).json({
+                    message: "USER_INFO_ERROR"
                 });
             });
         } else {
             res.status(403).json({
-                message: "Sorry, you do not have the rights"
+                message: "USER_RIGTHS_ERROR"
             });
         }
     } else {
@@ -323,7 +326,7 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
             res.status(200).json(rows);
         }).catch(function(error) {
             res.status(400).json({
-                message: "Sorry, something went wrong "
+                message: "CONNECT_ERROR"
             });
         });
     }
@@ -342,13 +345,13 @@ app.delete('/user/:id', checkTokenForDataBase, function(req, res) {
                 message: "User delete",
             });
         }).catch(function(error) {
-            res.status(400).json({
-                message: "User already deleted"
+            res.status(406).json({
+                message: "USER_DELETE_ERROR"
             });
         });
     } else {
         res.status(403).json({
-            message: "Sorry, you do not have the rights"
+            message: "USER_RIGTHS_ERROR"
         });
     }
 });
@@ -365,7 +368,7 @@ app.get('/users', checkTokenForDataBase, function(req, res) {
             res.status(200).send(rows);
         }).catch(function(error) {
             res.status(400).json({
-                message: "Sorry, something went wrong ",
+                message: "CONNECT_ERROR",
             });
         });
     } else {
@@ -378,7 +381,7 @@ app.get('/users', checkTokenForDataBase, function(req, res) {
             res.status(200).send(rows);
         }).catch(function(error) {
             res.status(400).json({
-                message: "Sorry, something went wrong ",
+                message: "CONNECT_ERROR",
             });
         });
     }
