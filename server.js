@@ -2,16 +2,22 @@ var express = require('express');
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
 var mysql = require('promise-mysql');
+var uuidv4 = require('uuid/v4');
 
 var app = express();
 const port = 8081;
+const timeForLogin = 60000;
+const countMin = 20;
 var headerId;
 var headerRole;
+var headerHash;
 const Role_Admin = "Admin";
 const Role_Guest = "Guest";
 const Role_User = "User";
 var arrayNames;
 var row;
+var tokenForLogin;
+var timestampForLogin;
 
 app.use(bodyParser.json());
 app.use(expressValidator());
@@ -62,10 +68,56 @@ app.use('/', function(req, res, next) {
 });
 
 app.use(function(req, res, next) {
-    headerId = req.headers["header-id"];
-    headerRole = req.headers["header-role"];
+    headerHash = req.headers["header-hash"];
     next();
 });
+
+function checkTokenForDataBase(req, res, next) {
+
+    connect.getConnection().then(function(conn) {
+        var sql = "SELECT Userid, token, timestamp FROM LoginUsershash WHERE token = ?";
+        var resultTimestamp = conn.query(sql, headerHash);
+        conn.release(conn);
+        return resultTimestamp;
+    }).then(function(rows) {
+        if (rows.length === 0) {
+            res.status(400).json({
+                message: "Bad token",
+            });
+        } else {
+            Object.keys(rows).forEach(function(key) {
+                var row = rows[key];
+                connect.getConnection().then(function(conn) {
+                    var sql = "SELECT role, id FROM Human WHERE id = ?";
+                    var resultRole = conn.query(sql, row.Userid);
+                    conn.release(conn);
+                    return resultRole;
+                }).then(function(rows) {
+                	Object.keys(rows).forEach(function(key) {
+                		var row = rows[key];
+                		headerRole = row.role;
+                		headerId = row.id;
+                	});
+                }).catch(function(error) {
+                    res.status(400).json({
+                        message: "Sorry, something went wrong ",
+                    });
+                });
+                if (row.timestamp > Date.now()) {
+                    next();
+                } else {
+                    res.status(400).json({
+                        message: "timestamp is over",
+                    });
+                }
+            });
+        }
+    }).catch(function(error) {
+        res.status(400).json({
+            message: "Sorry, something went wrong ",
+        });
+    });
+}
 
 app.post('/user', function(req, res, next) {
     var data = req.body;
@@ -137,7 +189,7 @@ app.post('/user', function(req, res) {
     res.status(200).send("Successfully");
 });
 
-app.post('/user/:id', function(req, res) {
+app.post('/user/:id', checkTokenForDataBase, function(req, res) {
     var data = req.body;
     var sql = "UPDATE Human SET nameuser = ?, surnameuser = ?, age = ?, password = ?, role = ? WHERE id = ?";
     var dataPersons = [data.name, data.surname, data.age, data.password, data.role, req.params.id];
@@ -166,7 +218,6 @@ app.post('/loginuser', function(req, res) {
         conn.release(conn);
         return resultLogin;
     }).then(function(rows) {
-
         if (rows.length === 0) {
             res.status(400).json({
                 message: "Wrong Name or password"
@@ -174,23 +225,70 @@ app.post('/loginuser', function(req, res) {
         } else {
             Object.keys(rows).forEach(function(key) {
                 var row = rows[key];
-                res.status(200);
-                res.json({
-                    'role': row.role,
-                    'id': row.id,
+                connect.getConnection().then(function(conn) {
+                    var userIdIntoDataBase = conn.query("SELECT Userid, token, timestamp FROM LoginUsershash WHERE Userid  = ?", row.id);
+                    conn.release(conn);
+                    return userIdIntoDataBase;
+                }).then(function(rows) {
+                    if (rows.length === 0) {
+                        connect.getConnection().then(function(conn) {
+                            tokenForLogin = uuidv4();
+                            timestampForLogin = Date.now() + (timeForLogin * countMin);
+                            var tempUser = {
+                                Userid: row.id,
+                                token: tokenForLogin,
+                                timestamp: timestampForLogin,
+                            };
+                            var tempLogin = conn.query("INSERT INTO LoginUsershash SET ? ", tempUser);
+                            conn.release(conn);
+                            return tempLogin;
+                        }).then(function(rows) {
+                            res.status(200);
+                            res.json({
+                                'hash': tokenForLogin,
+                            });
+                            return;
+                        }).catch(function(error) {
+                            res.status(400).json({
+                                message: "Sorry, something went wrong 1"
+                            });
+                        });
+                    } else {
+                        tokenForLogin = uuidv4();
+                        timestampForLogin = Date.now() + (timeForLogin * countMin);
+                        var sql = "UPDATE LoginUsershash SET  token = ?, timestamp = ? WHERE Userid = ?";
+                        var dataToken = [tokenForLogin, timestampForLogin, row.id];
+                        connect.getConnection().then(function(conn) {
+                            var resultUpdateForToken = conn.query(sql, dataToken);
+                            conn.release(conn);
+                            return resultUpdateForToken;
+                        }).then(function(rows) {
+                            res.status(200).json({
+                                'hash': tokenForLogin,
+                            });
+                        }).catch(function(error) {
+                            res.status(400).json({
+                                message: "Fail"
+                            });
+                        });
+                    }
+                }).catch(function(error) {
+                    res.status(400).json({
+                        message: "Sorry, something went wrong 1"
+                    });
+
                 });
-                return;
             });
         }
     }).catch(function(error) {
         res.status(400).json({
-            message: "Sorry, something went wrong"
+            message: "Sorry, something went wrong 2"
         });
     });
 });
 
-app.get('/user/:id', function(req, res) {
-
+app.get('/user/:id', checkTokenForDataBase, function(req, res) {
+	console.log(headerRole);
     if (headerRole === Role_Guest) {
         res.status(403).json({
             message: "Sorry, you do not have the rights"
@@ -231,7 +329,7 @@ app.get('/user/:id', function(req, res) {
     }
 });
 
-app.delete('/user/:id', function(req, res) {
+app.delete('/user/:id', checkTokenForDataBase, function(req, res) {
 
     if (headerRole === Role_Admin) {
         connect.getConnection().then(function(conn) {
@@ -255,7 +353,7 @@ app.delete('/user/:id', function(req, res) {
     }
 });
 
-app.get('/users', function(req, res) {
+app.get('/users', checkTokenForDataBase, function(req, res) {
 
     if (headerRole === Role_Guest) {
         connect.getConnection().then(function(conn) {

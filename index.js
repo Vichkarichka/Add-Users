@@ -7,6 +7,7 @@ var valueConfirmPasssword;
 var urlPage = 'http://localhost:8081/user/';
 var headerId;
 var headerRole;
+var headerHash;
 
 $(document).ready(function() {
     $('#buttonNew').hide();
@@ -57,7 +58,7 @@ $(document).ready(function() {
     });
 
     $('#Exit').click(function() {
-    	$('#infTextarea').val("Sign up or Login in to enter");
+        $('#infTextarea').val("Sign up or Login in to enter");
         $('#loginIn').show();
         $('#signUp').show();
         $('#Exit').hide();
@@ -78,8 +79,9 @@ $(document).ready(function() {
                 password: valueLoginPassword
             },
             success: function(data) {
-                headerId = data.id;
-                headerRole = data.role;
+                //headerId = data.id;
+                //headerRole = data.role;
+                headerHash = data.hash;
                 $('#buttonNew').show();
                 $('#buttonShow').show();
                 showButtonForPerson();
@@ -129,8 +131,9 @@ $(document).ready(function() {
             $.ajax({
                 url: 'http://localhost:8081/user',
                 headers: {
-                    'header-id': headerId,
-                    'header-role': headerRole
+                    //'header-id': headerId,
+                    //'header-role': headerRole
+                    'header-hash': headerHash,
                 },
                 type: 'POST',
                 data: {
@@ -167,8 +170,9 @@ $(document).ready(function() {
         $.ajax({
             url: 'http://localhost:8081/users',
             headers: {
-                'header-id': headerId,
-                'header-role': headerRole
+                //'header-id': headerId,
+                //'header-role': headerRole
+                'header-hash': headerHash,
             },
             type: 'GET',
             success: function(data) {
@@ -212,7 +216,7 @@ $(document).ready(function() {
                 };
             },
             error: function(data) {
-                $('#infTextarea').val(data.message);
+                $('#infTextarea').val(data.responseJSON.message);
             }
         });
     }
@@ -221,8 +225,7 @@ $(document).ready(function() {
         $.ajax({
             url: urlPage + targetId,
             headers: {
-                'header-id': headerId,
-                'header-role': headerRole
+                'header-hash': headerHash,
             },
             type: 'DELETE',
             success: function(data) {
@@ -248,20 +251,37 @@ $(document).ready(function() {
             }
         );
 
-        $.get(urlPage + targetId, function(data) {
-            $('#infoName').text(data[0].nameuser);
-            $('#infoSurname').text(data[0].surnameuser);
-            $('#infoAge').text(data[0].age);
-            $('#infoRole').text(data[0].role);
+        $.ajax({
+            url: urlPage + targetId,
+            headers: {
+                'header-hash': headerHash,
+            },
+            type: 'GET',
+            success: function(data) {
+                $('#infoName').text(data[0].nameuser);
+                $('#infoSurname').text(data[0].surnameuser);
+                $('#infoAge').text(data[0].age);
+                $('#infoRole').text(data[0].role);
+            },
+            error: function(data) {
+                $('#infTextarea').val(data.responseJSON.message);
+            }
         });
+        /* $.get(urlPage + targetId, function(data) {
+             $('#infoName').text(data[0].nameuser);
+             $('#infoSurname').text(data[0].surnameuser);
+             $('#infoAge').text(data[0].age);
+             $('#infoRole').text(data[0].role);
+         });*/
     }
 
     function postUpdatePersonToServer(targetId) {
         $.ajax({
             url: urlPage + targetId,
             headers: {
-                'header-id': headerId,
-                'header-role': headerRole
+                //'header-id': headerId,
+                //'header-role': headerRole
+                'header-hash': headerHash,
             },
             type: 'GET',
             success: function(data) {
@@ -299,8 +319,9 @@ $(document).ready(function() {
             $.ajax({
                 url: urlPage + targetId,
                 headers: {
-                    'header-id': headerId,
-                    'header-role': headerRole
+                    //'header-id': headerId,
+                    //'header-role': headerRole
+                    'header-hash': headerHash,
                 },
                 type: 'POST',
                 data: {
