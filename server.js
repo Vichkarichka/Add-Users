@@ -1,8 +1,9 @@
 var express = require('express');
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
-var mysql = require('promise-mysql');
+//var mysql = require('promise-mysql');
 var uuidv4 = require('uuid/v4');
+var db = require('./database');
 
 var app = express();
 const port = 8081;
@@ -43,14 +44,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-var connect = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: 'root',
-    database: 'Users',
-    connectionLimit: 20,
-});
-
 function pushDataToDataBase(name, surname, age, password, role) {
     var people = {
         nameuser: name,
@@ -59,7 +52,7 @@ function pushDataToDataBase(name, surname, age, password, role) {
         password: password,
         role: role,
     };
-    connect.getConnection().then(function(conn) {
+    db.connect.getConnection().then(function(conn) {
         var sql = "INSERT INTO Human SET ?";
         var result = conn.query(sql, people, function(err, result, fields) {
             if (err) throw err;
@@ -92,7 +85,7 @@ app.use(function(req, res, next) {
 
 function checkTokenForDataBase(req, res, next) {
 
-    connect.getConnection().then(function(conn) {
+    db.connect.getConnection().then(function(conn) {
         var sql = "SELECT Userid, token, timestamp FROM LoginUsershash WHERE token = ?";
         var resultTimestamp = conn.query(sql, headerHash);
         conn.release(conn);
@@ -140,24 +133,7 @@ function checkTokenForDataBase(req, res, next) {
 app.post('/user', function(req, res, next) {
     var data = req.body;
 
-    connect.getConnection().then(function(conn) {
-        var sql = "SELECT nameuser FROM Human WHERE nameuser = ?";
-        var resultName = conn.query(sql, data.name);
-        conn.release(conn);
-        return resultName;
-    }).then(function(rows) {
-        if (rows.length === 0) {
-            return next();
-        } else {
-            res.status(409).json({
-                message: objERRORS.USER_CREATE,
-            });
-        }
-    }).catch(function(error) {
-        res.status(404).json({
-            message: objERRORS.USER_INFO,
-        });
-    });
+	db.checkName(req, res, next, data);
 });
 
 app.post('/user/:id', function(req, res, next) {
