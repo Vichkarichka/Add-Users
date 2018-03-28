@@ -19,6 +19,24 @@ var row;
 var tokenForLogin;
 var timestampForLogin;
 
+const objERRORS = {
+    USER_LOGIN: "USER_LOGIN_ERROR",
+    USER_CREATE: "USER_CREATE_ERROR",
+    USER_INFO: "USER_INFO_ERROR",
+    USER_UPDATE: "USER_UPDATE_ERROR",
+    USER_RIGTHS: "USER_RIGTHS_ERROR",
+    USER_DELETE: "USER_DELETE_ERROR",
+    TIMESTAMP_TIMEOUT: "TIMESTAMP_TIMEOUT_ERROR",
+    INVALID_TOKEN: "INVALID_TOKEN_ERROR",
+    TOKEN_INSERT: "TOKEN_INSERT_ERROR",
+    TOKEN_UPDATE: "TOKEN_UPDATE_ERROR",
+    CONNECT: "CONNECT_ERROR",
+    USER_NAME: "USER_NAME_ERROR",
+    USER_SURNAME: "USER_SURNAME_ERROR",
+    USER_AGE: "USER_AGE_ERROR",
+    USER_PASSWORD: "USER_PASSWORD_ERROR",
+};
+
 app.use(bodyParser.json());
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({
@@ -49,7 +67,7 @@ function pushDataToDataBase(name, surname, age, password, role) {
         });
     }).catch(function(error) {
         res.status(422).json({
-            message: "USER_CREATE_ERROR",
+            message: objERRORS.USER_CREATE,
         });
     });
 }
@@ -82,7 +100,7 @@ function checkTokenForDataBase(req, res, next) {
     }).then(function(rows) {
         if (rows.length === 0) {
             res.status(404).json({
-                message: "INVALID_TOKEN",
+                message: objERRORS.INVALID_TOKEN,
             });
         } else {
             Object.keys(rows).forEach(function(key) {
@@ -100,21 +118,21 @@ function checkTokenForDataBase(req, res, next) {
                     });
                 }).catch(function(error) {
                     res.status(404).json({
-                        message: "USER_INFO_ERROR",
+                        message: objERRORS.USER_INFO,
                     });
                 });
                 if (row.timestamp > Date.now()) {
                     next();
                 } else {
                     res.status(403).json({
-                        message: "TIMESTAMP_TIMEOUT",
+                        message: objERRORS.TIMESTAMP_TIMEOUT,
                     });
                 }
             });
         }
     }).catch(function(error) {
         res.status(404).json({
-            message: "INVALID_TOKEN",
+            message: objERRORS.INVALID_TOKEN,
         });
     });
 }
@@ -132,12 +150,12 @@ app.post('/user', function(req, res, next) {
             return next();
         } else {
             res.status(409).json({
-                message: "USER_CREATE_ERROR",
+                message: objERRORS.USER_CREATE,
             });
         }
     }).catch(function(error) {
         res.status(404).json({
-            message: "USER_INFO_ERROR",
+            message: objERRORS.USER_INFO,
         });
     });
 });
@@ -155,22 +173,22 @@ app.post('/user/:id', function(req, res, next) {
             return next();
         } else {
             res.status(409).json({
-                message: "USER_CREATE_ERROR",
+                message: objERRORS.USER_CREATE,
             });
         }
     }).catch(function(error) {
         res.status(404).json({
-            message: "USER_INFO_ERROR",
+            message: objERRORS.USER_INFO,
         });
     });
 });
 
 app.post('/user', function(req, res, next) {
 
-    req.checkBody('name', 'Invalid field Name values').notEmpty().isAlpha();
-    req.checkBody('surname', 'Invalid field Surname values').notEmpty().isAlpha();
-    req.checkBody('age', 'Invalid field Age values').notEmpty().isInt();
-    req.checkBody('password', 'Invalid field Password values').notEmpty().isLength({
+    req.checkBody('name', objERRORS.USER_NAME).notEmpty().isAlpha();
+    req.checkBody('surname', objERRORS.USER_SURNAME).notEmpty().isAlpha();
+    req.checkBody('age', objERRORS.USER_AGE).notEmpty().isInt();
+    req.checkBody('password', objERRORS.USER_PASSWORD).notEmpty().isLength({
         min: 5
     });
 
@@ -178,7 +196,9 @@ app.post('/user', function(req, res, next) {
 
     if (errors) {
         for (var i = 0; i < errors.length; i++) {
-            res.status(400).send('Error: ' + errors[i].msg);
+            res.status(400).json({
+                message: errors[i].msg,
+            });
             return;
         }
     } else {
@@ -207,7 +227,7 @@ app.post('/user/:id', checkTokenForDataBase, function(req, res) {
         });
     }).catch(function(error) {
         res.status(406).json({
-            message: "USER_UPDATE_ERROR"
+            message: objERRORS.USER_UPDATE,
         });
     });
 });
@@ -223,7 +243,7 @@ app.post('/loginuser', function(req, res) {
     }).then(function(rows) {
         if (rows.length === 0) {
             res.status(406).json({
-                message: "USER_LOGIN_ERROR"
+                message: objERRORS.USER_LOGIN,
             });
         } else {
             Object.keys(rows).forEach(function(key) {
@@ -253,7 +273,7 @@ app.post('/loginuser', function(req, res) {
                             return;
                         }).catch(function(error) {
                             res.status(406).json({
-                                message: "TOKEN_INSERT_ERROR"
+                                message: objERRORS.TOKEN_INSERT,
                             });
                         });
                     } else {
@@ -271,13 +291,13 @@ app.post('/loginuser', function(req, res) {
                             });
                         }).catch(function(error) {
                             res.status(406).json({
-                                message: "TOKEN_UPDATE_ERROR"
+                                message: objERRORS.TOKEN_UPDATE,
                             });
                         });
                     }
                 }).catch(function(error) {
                     res.status(400).json({
-                        message: "CONNECT_ERROR"
+                        message: objERRORS.CONNECT,
                     });
 
                 });
@@ -285,7 +305,7 @@ app.post('/loginuser', function(req, res) {
         }
     }).catch(function(error) {
         res.status(400).json({
-            message: "CONNECT_ERROR"
+            message: objERRORS.CONNECT,
         });
     });
 });
@@ -294,7 +314,7 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
 
     if (headerRole === Role_Guest) {
         res.status(403).json({
-            message: "USER_RIGTHS_ERROR"
+            message: objERRORS.USER_RIGTHS,
         });
     }
     if (headerRole === Role_User) {
@@ -308,12 +328,12 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
                 res.status(200).json(rows);
             }).catch(function(error) {
                 res.status(406).json({
-                    message: "USER_INFO_ERROR"
+                    message: objERRORS.USER_INFO,
                 });
             });
         } else {
             res.status(403).json({
-                message: "USER_RIGTHS_ERROR"
+                message: objERRORS.USER_RIGTHS,
             });
         }
     } else {
@@ -326,7 +346,7 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
             res.status(200).json(rows);
         }).catch(function(error) {
             res.status(400).json({
-                message: "CONNECT_ERROR"
+                message: objERRORS.CONNECT,
             });
         });
     }
@@ -346,12 +366,12 @@ app.delete('/user/:id', checkTokenForDataBase, function(req, res) {
             });
         }).catch(function(error) {
             res.status(406).json({
-                message: "USER_DELETE_ERROR"
+                message: objERRORS.USER_DELETE,
             });
         });
     } else {
         res.status(403).json({
-            message: "USER_RIGTHS_ERROR"
+            message: objERRORS.USER_RIGTHS,
         });
     }
 });
@@ -368,7 +388,7 @@ app.get('/users', checkTokenForDataBase, function(req, res) {
             res.status(200).send(rows);
         }).catch(function(error) {
             res.status(400).json({
-                message: "CONNECT_ERROR",
+                message: objERRORS.CONNECT,
             });
         });
     } else {
@@ -381,7 +401,7 @@ app.get('/users', checkTokenForDataBase, function(req, res) {
             res.status(200).send(rows);
         }).catch(function(error) {
             res.status(400).json({
-                message: "CONNECT_ERROR",
+                message: objERRORS.CONNECT,
             });
         });
     }

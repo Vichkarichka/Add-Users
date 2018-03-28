@@ -16,11 +16,15 @@ const objERROR = {
 	USER_UPDATE_ERROR: "User can not update",
 	USER_RIGTHS_ERROR: "Sorry, you do not have the rights",
 	USER_DELETE_ERROR: "User already delete",
-	TIMESTAMP_TIMEOUT: "The session is over, please re-login",
-	INVALID_TOKEN: "The session is not find,please re-login",
+	TIMESTAMP_TIMEOUT_ERROR: "The session is over, please re-login",
+	INVALID_TOKEN_ERROR: "The session is not find,please re-login",
 	TOKEN_INSERT_ERROR: "Can not insert session, please re-login",
 	TOKEN_UPDATE_ERROR: "Can not refresh session,please re-login",
 	CONNECT_ERROR: "Try again",
+ 	USER_NAME_ERROR: "Invalid field Name values",
+    USER_SURNAME_ERROR: "Invalid field Surname values",
+    USER_AGE_ERROR: "Invalid field Age values",
+    USER_PASSWORD_ERROR: "Invalid field Password values",
 };
 
 $(document).ready(function() {
