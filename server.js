@@ -1,9 +1,9 @@
 var express = require('express');
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
-//var mysql = require('promise-mysql');
 var uuidv4 = require('uuid/v4');
-var db = require('./database');
+var db = require('./SqlQuery');
+var Promise = require("bluebird");
 
 var app = express();
 const port = 8081;
@@ -44,26 +44,6 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
-function pushDataToDataBase(name, surname, age, password, role) {
-    var people = {
-        nameuser: name,
-        surnameuser: surname,
-        age: age,
-        password: password,
-        role: role,
-    };
-    db.connect.getConnection().then(function(conn) {
-        var sql = "INSERT INTO Human SET ?";
-        var result = conn.query(sql, people, function(err, result, fields) {
-            if (err) throw err;
-            conn.release(conn);
-        });
-    }).catch(function(error) {
-        res.status(422).json({
-            message: objERRORS.USER_CREATE,
-        });
-    });
-}
 
 app.use('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -85,27 +65,17 @@ app.use(function(req, res, next) {
 
 function checkTokenForDataBase(req, res, next) {
 
-    db.connect.getConnection().then(function(conn) {
-        var sql = "SELECT Userid, token, timestamp FROM LoginUsershash WHERE token = ?";
-        var resultTimestamp = conn.query(sql, headerHash);
-        conn.release(conn);
-        return resultTimestamp;
-    }).then(function(rows) {
-        if (rows.length === 0) {
+    db.checkToken(headerHash).then(function(result) {
+        if (result.length === 0) {
             res.status(404).json({
                 message: objERRORS.INVALID_TOKEN,
             });
         } else {
-            Object.keys(rows).forEach(function(key) {
-                var row = rows[key];
-                connect.getConnection().then(function(conn) {
-                    var sql = "SELECT role, id FROM Human WHERE id = ?";
-                    var resultRole = conn.query(sql, row.Userid);
-                    conn.release(conn);
-                    return resultRole;
-                }).then(function(rows) {
-                    Object.keys(rows).forEach(function(key) {
-                        var row = rows[key];
+            Object.keys(result).forEach(function(key) {
+                var row = result[key];
+                db.checkRoleIntoDataBase(row.Userid).then(function(result) {
+                    Object.keys(result).forEach(function(key) {
+                        var row = result[key];
                         headerRole = row.role;
                         headerId = row.id;
                     });
@@ -133,19 +103,26 @@ function checkTokenForDataBase(req, res, next) {
 app.post('/user', function(req, res, next) {
     var data = req.body;
 
-	db.checkName(req, res, next, data);
+    db.checkName(data).then(function(result) {
+        if (result.length === 0) {
+            return next();
+        } else {
+            res.status(409).json({
+                message: objERRORS.USER_CREATE,
+            });
+        }
+    }).catch(function(error) {
+        res.status(404).json({
+            message: objERRORS.USER_INFO,
+        });
+    });
 });
 
 app.post('/user/:id', function(req, res, next) {
     var data = req.body;
 
-    connect.getConnection().then(function(conn) {
-        var sql = "SELECT nameuser, id FROM Human WHERE nameuser = ?";
-        var resultName = conn.query(sql, data.name);
-        conn.release(conn);
-        return resultName;
-    }).then(function(rows) {
-        if (rows.length === 0 || rows[0].id === parseInt(req.params.id)) {
+    db.checkName(data).then(function(result) {
+        if (result.length === 0 || result[0].id === parseInt(req.params.id)) {
             return next();
         } else {
             res.status(409).json({
@@ -184,20 +161,20 @@ app.post('/user', function(req, res, next) {
 
 app.post('/user', function(req, res) {
     var data = req.body;
-    pushDataToDataBase(data.name, data.surname, data.age, data.password, data.role);
-    res.status(201).send("Successfully");
+    db.pushDataToDataBase(data.name, data.surname, data.age, data.password, data.role).then(function(result) {
+        if (result.length !== 0) {
+            res.status(201).send("Successfully");
+        } else {
+            res.status(409).json({
+                message: objERRORS.USER_CREATE,
+            });
+        }
+    });
 });
 
 app.post('/user/:id', checkTokenForDataBase, function(req, res) {
     var data = req.body;
-    var sql = "UPDATE Human SET nameuser = ?, surnameuser = ?, age = ?, password = ?, role = ? WHERE id = ?";
-    var dataPersons = [data.name, data.surname, data.age, data.password, data.role, req.params.id];
-
-    connect.getConnection().then(function(conn) {
-        var resultUpdate = conn.query(sql, dataPersons);
-        conn.release(conn);
-        return resultUpdate;
-    }).then(function(rows) {
+    db.updateDataInDataBase(data.name, data.surname, data.age, data.password, data.role, req.params.id).then(function(result) {
         res.status(200).json({
             message: "Successfully"
         });
@@ -210,38 +187,20 @@ app.post('/user/:id', checkTokenForDataBase, function(req, res) {
 
 app.post('/loginuser', function(req, res) {
     var data = req.body;
-    var sql = "SELECT nameuser, password, role, id FROM Human WHERE nameuser = ? AND password = ?";
 
-    connect.getConnection().then(function(conn) {
-        var resultLogin = conn.query(sql, [data.name, data.password]);
-        conn.release(conn);
-        return resultLogin;
-    }).then(function(rows) {
-        if (rows.length === 0) {
+    db.loginUserIntoApp(data).then(function(result) {
+        if (result.length === 0) {
             res.status(406).json({
                 message: objERRORS.USER_LOGIN,
             });
         } else {
-            Object.keys(rows).forEach(function(key) {
-                var row = rows[key];
-                connect.getConnection().then(function(conn) {
-                    var userIdIntoDataBase = conn.query("SELECT Userid, token, timestamp FROM LoginUsershash WHERE Userid  = ?", row.id);
-                    conn.release(conn);
-                    return userIdIntoDataBase;
-                }).then(function(rows) {
-                    if (rows.length === 0) {
-                        connect.getConnection().then(function(conn) {
-                            tokenForLogin = uuidv4();
-                            timestampForLogin = Date.now() + (timeForLogin * countMin);
-                            var tempUser = {
-                                Userid: row.id,
-                                token: tokenForLogin,
-                                timestamp: timestampForLogin,
-                            };
-                            var tempLogin = conn.query("INSERT INTO LoginUsershash SET ? ", tempUser);
-                            conn.release(conn);
-                            return tempLogin;
-                        }).then(function(rows) {
+            Object.keys(result).forEach(function(key) {
+                var row = result[key];
+                db.findTokenInDataBase(row).then(function(result) {
+                    if (result.length === 0) {
+                        tokenForLogin = uuidv4();
+                        timestampForLogin = Date.now() + (timeForLogin * countMin);
+                        db.insertTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
                             res.status(200);
                             res.json({
                                 'hash': tokenForLogin,
@@ -255,13 +214,7 @@ app.post('/loginuser', function(req, res) {
                     } else {
                         tokenForLogin = uuidv4();
                         timestampForLogin = Date.now() + (timeForLogin * countMin);
-                        var sql = "UPDATE LoginUsershash SET  token = ?, timestamp = ? WHERE Userid = ?";
-                        var dataToken = [tokenForLogin, timestampForLogin, row.id];
-                        connect.getConnection().then(function(conn) {
-                            var resultUpdateForToken = conn.query(sql, dataToken);
-                            conn.release(conn);
-                            return resultUpdateForToken;
-                        }).then(function(rows) {
+                        db.updateTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
                             res.status(200).json({
                                 'hash': tokenForLogin,
                             });
@@ -275,9 +228,8 @@ app.post('/loginuser', function(req, res) {
                     res.status(400).json({
                         message: objERRORS.CONNECT,
                     });
-
                 });
-            });
+            })
         }
     }).catch(function(error) {
         res.status(400).json({
@@ -287,21 +239,15 @@ app.post('/loginuser', function(req, res) {
 });
 
 app.get('/user/:id', checkTokenForDataBase, function(req, res) {
-
-    if (headerRole === Role_Guest) {
+    if(headerRole === Role_Guest) {
         res.status(403).json({
             message: objERRORS.USER_RIGTHS,
         });
     }
-    if (headerRole === Role_User) {
+    if(headerRole === Role_User) {
         if (headerId === req.params.id) {
-            connect.getConnection().then(function(conn) {
-                var sql = "SELECT nameuser, surnameuser, age, password, role, id FROM Human WHERE id = ?";
-                var resultInfo = conn.query(sql, req.params.id);
-                conn.release(conn);
-                return resultInfo;
-            }).then(function(rows) {
-                res.status(200).json(rows);
+            db.selectAllInformation(req.params.id).then(function(result) {
+                res.status(200).json(result);
             }).catch(function(error) {
                 res.status(406).json({
                     message: objERRORS.USER_INFO,
@@ -313,13 +259,8 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
             });
         }
     } else {
-        connect.getConnection().then(function(conn) {
-            var sql = "SELECT nameuser, surnameuser, age, password, role, id FROM Human WHERE id = ?";
-            var resultInfo = conn.query(sql, req.params.id);
-            conn.release(conn);
-            return resultInfo;
-        }).then(function(rows) {
-            res.status(200).json(rows);
+        db.selectAllInformation(req.params.id).then(function(result) {
+            res.status(200).json(result);
         }).catch(function(error) {
             res.status(400).json({
                 message: objERRORS.CONNECT,
@@ -330,23 +271,18 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
 
 app.delete('/user/:id', checkTokenForDataBase, function(req, res) {
 
-    if (headerRole === Role_Admin) {
-        connect.getConnection().then(function(conn) {
-            var sql = "DELETE FROM Human WHERE id = ?";
-            var resultDelete = conn.query(sql, req.params.id);
-            conn.release(conn);
-            return resultDelete;
-        }).then(function(rows) {
-            res.status(200).json({
+    if(headerRole === Role_Admin) {
+    	db.deletePersonOfDataBase(req.params.id).then(function(result) {
+    		 res.status(200).json({
                 message: "User delete",
             });
-        }).catch(function(error) {
+    	}).catch(function(error) {
             res.status(406).json({
                 message: objERRORS.USER_DELETE,
             });
         });
     } else {
-        res.status(403).json({
+    	res.status(403).json({
             message: objERRORS.USER_RIGTHS,
         });
     }
@@ -354,27 +290,17 @@ app.delete('/user/:id', checkTokenForDataBase, function(req, res) {
 
 app.get('/users', checkTokenForDataBase, function(req, res) {
 
-    if (headerRole === Role_Guest) {
-        connect.getConnection().then(function(conn) {
-            var sql = "SELECT nameuser, surnameuser, age, password, role, id FROM Human WHERE id = ?";
-            var resultShow = conn.query(sql, headerId);
-            conn.release(conn);
-            return resultShow;
-        }).then(function(rows) {
-            res.status(200).send(rows);
+    if(headerRole === Role_Guest) {
+        db.selectAllInformation(headerId).then(function(result) {
+            res.status(200).send(result);
         }).catch(function(error) {
             res.status(400).json({
                 message: objERRORS.CONNECT,
             });
         });
     } else {
-        connect.getConnection().then(function(conn) {
-            var sql = "SELECT nameuser, surnameuser, age, password, role, id FROM Human";
-            var resultShow = conn.query(sql);
-            conn.release(conn);
-            return resultShow;
-        }).then(function(rows) {
-            res.status(200).send(rows);
+        db.selectAllInformationDB().then(function(result) {
+            res.status(200).send(result);
         }).catch(function(error) {
             res.status(400).json({
                 message: objERRORS.CONNECT,
