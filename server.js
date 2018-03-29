@@ -1,24 +1,19 @@
 var express = require('express');
 var expressValidator = require('express-validator');
 var bodyParser = require('body-parser');
-var uuidv4 = require('uuid/v4');
-var db = require('./SqlQuery');
+var db = require('./modules/SqlQuery');
+var au = require('./modules/Authorization');
+var loginuser = require('./modules/login')
 var Promise = require("bluebird");
 
 var app = express();
 const port = 8081;
-const timeForLogin = 60000;
-const countMin = 20;
-var headerId;
-var headerRole;
 var headerHash;
 const Role_Admin = "Admin";
 const Role_Guest = "Guest";
 const Role_User = "User";
 var arrayNames;
 var row;
-var tokenForLogin;
-var timestampForLogin;
 
 const objERRORS = {
     USER_LOGIN: "USER_LOGIN_ERROR",
@@ -37,14 +32,6 @@ const objERRORS = {
     USER_AGE: "USER_AGE_ERROR",
     USER_PASSWORD: "USER_PASSWORD_ERROR",
 };
-
-app.use(bodyParser.json());
-app.use(expressValidator());
-app.use(bodyParser.urlencoded({
-    extended: true
-}));
-
-
 app.use('/', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "*");
@@ -58,47 +45,17 @@ app.use('/', function(req, res, next) {
     }
 });
 
+app.use('/loginuser',loginuser);
+app.use(bodyParser.json());
+app.use(expressValidator());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
 app.use(function(req, res, next) {
     headerHash = req.headers["header-hash"];
     next();
 });
-
-function checkTokenForDataBase(req, res, next) {
-
-    db.checkToken(headerHash).then(function(result) {
-        if (result.length === 0) {
-            res.status(404).json({
-                message: objERRORS.INVALID_TOKEN,
-            });
-        } else {
-            Object.keys(result).forEach(function(key) {
-                var row = result[key];
-                db.checkRoleIntoDataBase(row.Userid).then(function(result) {
-                    Object.keys(result).forEach(function(key) {
-                        var row = result[key];
-                        headerRole = row.role;
-                        headerId = row.id;
-                    });
-                }).catch(function(error) {
-                    res.status(404).json({
-                        message: objERRORS.USER_INFO,
-                    });
-                });
-                if (row.timestamp > Date.now()) {
-                    next();
-                } else {
-                    res.status(403).json({
-                        message: objERRORS.TIMESTAMP_TIMEOUT,
-                    });
-                }
-            });
-        }
-    }).catch(function(error) {
-        res.status(404).json({
-            message: objERRORS.INVALID_TOKEN,
-        });
-    });
-}
 
 app.post('/user', function(req, res, next) {
     var data = req.body;
@@ -172,7 +129,7 @@ app.post('/user', function(req, res) {
     });
 });
 
-app.post('/user/:id', checkTokenForDataBase, function(req, res) {
+app.post('/user/:id', au.checkTokenForDataBase, function(req, res) {
     var data = req.body;
     db.updateDataInDataBase(data.name, data.surname, data.age, data.password, data.role, req.params.id).then(function(result) {
         res.status(200).json({
@@ -185,67 +142,14 @@ app.post('/user/:id', checkTokenForDataBase, function(req, res) {
     });
 });
 
-app.post('/loginuser', function(req, res) {
-    var data = req.body;
-
-    db.loginUserIntoApp(data).then(function(result) {
-        if (result.length === 0) {
-            res.status(406).json({
-                message: objERRORS.USER_LOGIN,
-            });
-        } else {
-            Object.keys(result).forEach(function(key) {
-                var row = result[key];
-                db.findTokenInDataBase(row).then(function(result) {
-                    if (result.length === 0) {
-                        tokenForLogin = uuidv4();
-                        timestampForLogin = Date.now() + (timeForLogin * countMin);
-                        db.insertTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
-                            res.status(200);
-                            res.json({
-                                'hash': tokenForLogin,
-                            });
-                            return;
-                        }).catch(function(error) {
-                            res.status(406).json({
-                                message: objERRORS.TOKEN_INSERT,
-                            });
-                        });
-                    } else {
-                        tokenForLogin = uuidv4();
-                        timestampForLogin = Date.now() + (timeForLogin * countMin);
-                        db.updateTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
-                            res.status(200).json({
-                                'hash': tokenForLogin,
-                            });
-                        }).catch(function(error) {
-                            res.status(406).json({
-                                message: objERRORS.TOKEN_UPDATE,
-                            });
-                        });
-                    }
-                }).catch(function(error) {
-                    res.status(400).json({
-                        message: objERRORS.CONNECT,
-                    });
-                });
-            })
-        }
-    }).catch(function(error) {
-        res.status(400).json({
-            message: objERRORS.CONNECT,
-        });
-    });
-});
-
-app.get('/user/:id', checkTokenForDataBase, function(req, res) {
-    if(headerRole === Role_Guest) {
+app.get('/user/:id', au.checkTokenForDataBase, function(req, res) {
+    if(req.body.Role  === Role_Guest) {
         res.status(403).json({
             message: objERRORS.USER_RIGTHS,
         });
     }
-    if(headerRole === Role_User) {
-        if (headerId === req.params.id) {
+    if(req.body.Role === Role_User) {
+        if (req.body.Id === req.params.id) {
             db.selectAllInformation(req.params.id).then(function(result) {
                 res.status(200).json(result);
             }).catch(function(error) {
@@ -269,9 +173,9 @@ app.get('/user/:id', checkTokenForDataBase, function(req, res) {
     }
 });
 
-app.delete('/user/:id', checkTokenForDataBase, function(req, res) {
+app.delete('/user/:id', au.checkTokenForDataBase, function(req, res) {
 
-    if(headerRole === Role_Admin) {
+    if(req.body.Role === Role_Admin) {
     	db.deletePersonOfDataBase(req.params.id).then(function(result) {
     		 res.status(200).json({
                 message: "User delete",
@@ -288,10 +192,10 @@ app.delete('/user/:id', checkTokenForDataBase, function(req, res) {
     }
 });
 
-app.get('/users', checkTokenForDataBase, function(req, res) {
+app.get('/users', au.checkTokenForDataBase, function(req, res) {
 
-    if(headerRole === Role_Guest) {
-        db.selectAllInformation(headerId).then(function(result) {
+    if(req.body.Role === Role_Guest) {
+        db.selectAllInformation(req.body.Id).then(function(result) {
             res.status(200).send(result);
         }).catch(function(error) {
             res.status(400).json({
