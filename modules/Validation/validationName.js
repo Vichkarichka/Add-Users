@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var ob = require('../Objecterror/objectError');
-var db = require('../Database/SqlQuery');
+var user = require('../Database/SqlQuery');
 var bodyParser = require('body-parser');
 
 router.use(bodyParser.json());
@@ -13,7 +13,7 @@ router.use(bodyParser.urlencoded({
 router.post('/', function(req, res, next) {
     var data = req.body;
 
-    db.checkName(data).then(function(result) {
+    user.checkName(data).then(function(result) {
         if (result.length === 0) {
             return next();
         } else {

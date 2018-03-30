@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../Database/SqlQuery');
+var user = require('../Database/SqlQuery');
 var uuidv4 = require('uuid/v4');
 var bodyParser = require('body-parser');
 var ob = require('../Objecterror/objectError');
@@ -18,7 +18,7 @@ router.use(bodyParser.urlencoded({
 router.post('/', function(req, res) {
     var data = req.body;
 
-    db.loginUserIntoApp(data).then(function(result) {
+    user.loginUserIntoApp(data).then(function(result) {
         if (result.length === 0) {
             res.status(406).json({
                 message: ob.objERRORS.USER_LOGIN,
@@ -26,11 +26,11 @@ router.post('/', function(req, res) {
         } else {
             Object.keys(result).forEach(function(key) {
                 var row = result[key];
-                db.findTokenInDataBase(row).then(function(result) {
+                user.findTokenInDataBase(row).then(function(result) {
                     if (result.length === 0) {
                         tokenForLogin = uuidv4();
                         timestampForLogin = Date.now() + (timeForLogin * countMin);
-                        db.insertTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
+                        user.insertTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
                             res.status(200);
                             res.json({
                                 'hash': tokenForLogin,
@@ -44,7 +44,7 @@ router.post('/', function(req, res) {
                     } else {
                         tokenForLogin = uuidv4();
                         timestampForLogin = Date.now() + (timeForLogin * countMin);
-                        db.updateTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
+                        user.updateTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
                             res.status(200).json({
                                 'hash': tokenForLogin,
                             });

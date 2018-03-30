@@ -1,10 +1,10 @@
 var express = require('express');
-var db = require('../Database/SqlQuery');
+var user = require('../Database/SqlQuery');
 var ob = require('../Objecterror/objectError');
 
 exports.checkTokenForDataBase = function checkTokenForDataBase(req, res, next) {
     var headerHash = req.headers["header-hash"];
-    db.checkToken(headerHash).then(function(result) {
+    user.checkToken(headerHash).then(function(result) {
         if (result.length === 0) {
             res.status(404).json({
                 message: ob.objERRORS.INVALID_TOKEN,
@@ -12,7 +12,7 @@ exports.checkTokenForDataBase = function checkTokenForDataBase(req, res, next) {
         } else {
             Object.keys(result).forEach(function(key) {
                 var row = result[key];
-                db.checkRoleIntoDataBase(row.Userid).then(function(result) {
+                user.checkRoleIntoDataBase(row.Userid).then(function(result) {
                     Object.keys(result).forEach(function(key) {
                         var row = result[key];
                         req.body.Role = row.role;
