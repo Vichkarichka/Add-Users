@@ -3,10 +3,26 @@ var router = express.Router();
 var ob = require('../Objecterror/objectError');
 var user = require('../Database/SqlQuery');
 var au = require('../Authorization/Authorization');
+var role = require('../Authorization/Role');
 
-const Role_Admin = "Admin";
-const Role_Guest = "Guest";
-const Role_User = "User";
+
+var Role_Admin;
+var Role_Guest;
+var Role_User;
+
+function getRoles() {
+    role.getRole().then(function(result) {
+        console.log(result);
+        Role_Guest = result.guest;
+        Role_Admin = result.admin;
+        Role_User = result.user;
+    }).catch(function(error) {
+        res.status(406).json({
+            message: ob.objERRORS.USER_UPDATE,
+        });
+    });
+}
+     getRoles();
 
 router.get('/', au.checkTokenForDataBase, function(req, res) {
 

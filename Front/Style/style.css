@@ -20,13 +20,13 @@ padding: 20px 10px;
 }
 #modal_formFive , #modal_formEdit{
 	width: 200px;
-height: 320px;
+height: 450px;
 background: #9ea7af;
 border-radius:10px;
 position: fixed;
 top: 45%;
 left: 50%;
-margin-top: -150px;
+margin-top: -250px;
 margin-left: -150px;
 display: none;
 opacity: 0;
@@ -346,4 +346,16 @@ margin-left: 1%;
     height: 300px; 
     resize: none; 
 
+}
+#SignUpBIO, #EditBIO{
+      resize: none;
+}
+#selectCountryCitySchool {
+  width: 100px;
+  padding-top: 5px;
+    padding-bottom: 5px;
+}
+#info {
+      width: 90px;
+      padding-bottom: 20px;
 }

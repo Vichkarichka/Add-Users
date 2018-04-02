@@ -13,75 +13,114 @@
                 <span id="modal_close">X</span>
                 <div id = "form">
                     <p>Info about person</p>
-                    <label>Name:</label>
-                    <p id = "infoName"></p>
-                    <label>Surname:</label>
-                    <p id = "infoSurname"></p>
-                    <label>Age:</label>
-                    <p id = "infoAge"></p>
-                    <label>Role:<p id = infoRole></p></label>
+                    <form id = "info">
+                        <label>Name:</label>
+                        <label id = "infoName"></label>
+                        <label>Surname:</label>
+                        <label id = "infoSurname"></label>
+                        <label>Role:</label>
+                        <label id = "infoRole"></label>
+                        <label>Birth Day:</label>
+                        <label id = "infoBirthDay"></label>
+                        <label>Country:</label>
+                        <label id = "infoCountry"></label>
+                        <label>City:</label>
+                        <label id = "infoCity"></label>
+                        <label>School:</label>
+                        <label id = "infoSchool"></label>
+                        <label>BIO:</label>
+                        <label id = "infoBIO"></label>
+                    </form>
                     <button id ="Cancel">Cancel</button>
                 </div>
             </div>
             <div id = "modal_formFour">
                 <span id="modal_close">X</span>
                 <div id = "formLogin">
-                <p>Login In</p>
-                <label>User Name</label>
-                <input type="text" id = "loginUserName" required pattern="[A-Za-z]+">
-                <label>Password</label>
-                <input  type="password" id = "passwordLogiIn" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                    <p>Login In</p>
+                    <label>User Name</label>
+                    <input type="text" id = "loginUserName" required pattern="[A-Za-z]+">
+                    <label>Password</label>
+                    <input  type="password" id = "passwordLogiIn" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
                 </div>
                 <button id ="buttonLoginIn">Login In</button>
             </div>
             <div id = "modal_formFive">
                 <span id="modal_close">X</span>
                 <div id = "formSignUp">
-                <p>Sign Up</p>
-                <label>Name</label>
-                <input type="text" id = "signUpName" required pattern="[A-Za-z]+">
-                <label>Surname</label>
-                <input type="text" id = "signUpSurname" required pattern="[A-Za-z]+">
-                <label>Age</label>
-                <input type="number" id = "signUpAge" min="0" step="1">
-                <label>Password</label>
-                <input type="password" id = "signUpPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
-                <label>Confirm Password</label>
-                <input type="password" id = "signUpConfirmPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
-                <p id = "areaForError"></p>
-                <select id = "selectRole">
-                    <option value="guest">Guest</option>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
+                    <p>Sign Up</p>
+                    <form>
+                        <label>Name</label>
+                        <input type="text" id = "signUpName" required pattern="[A-Za-z]+">
+                        <label>Surname</label>
+                        <input type="text" id = "signUpSurname" required pattern="[A-Za-z]+">
+                        <label>Birth Day</label>
+                        <input type="date" id = "signUpBithDay">
+                        <div id = 'selectCountryCitySchool'>
+                            <label>Country</label>
+                            <select id = "selectSignUpContry">
+                            </select>
+                            <label>City</label>
+                            <select id = "selectSignUpCity">
+                            </select>
+                            <label>School</label>
+                            <select id = "selectSignUpSchool">
+                            </select>
+                        </div>
+                        <label>BIO</label>
+                        <textarea id = "SignUpBIO"></textarea>
+                        <label>Password</label>
+                        <input type="password" id = "signUpPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                        <label>Confirm Password</label>
+                        <input type="password" id = "signUpConfirmPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                    </form>
+                    <p id = "areaForError"></p>
+                    <select id = "selectRole">
+                        <option value="3">Guest</option>
+                        <option value="2">User</option>
+                        <option value="1">Admin</option>
+                    </select>
                 </div>
                 <div id = buttons>
-                <input type="button" value="Sign Up" id ="buttonSignUp">
+                    <input type="button" value="Sign Up" id ="buttonSignUp">
                 </div>
             </div>
-             <div id = "modal_formEdit">
+            <div id = "modal_formEdit">
                 <span id="modal_close">X</span>
                 <div id = "formSignUp">
-                <p>Edit</p>
-                <label>Name</label>
-                <input type="text" id = "EditName" required pattern="[A-Za-z]+">
-                <label>Surname</label>
-                <input type="text" id = "EditSurname" required pattern="[A-Za-z]+">
-                <label>Age</label>
-                <input type="number" id = "EditAge" min="0" step="1">
-                <label>Password</label>
-                <input  type="password" id = "EditPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
-                <label>Confirm Password</label>
-                <input  type="password" id = "EditConfirmPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
-                <p id = "areaForError"></p>
-                <select id = "selectEditRole">
-                    <option value="guest">Guest</option>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
+                    <p>Edit</p>
+                    <label>Name</label>
+                    <input type="text" id = "EditName" required pattern="[A-Za-z]+">
+                    <label>Surname</label>
+                    <input type="text" id = "EditSurname" required pattern="[A-Za-z]+">
+                    <label>Birth Day</label>
+                        <input type="date" id = "EditBithDay">
+                        <div id = 'selectEditCountryCitySchool'>
+                            <label>Country</label>
+                            <select id = "selectEditContry">
+                            </select>
+                            <label>City</label>
+                            <select id = "selectEditCity">
+                            </select>
+                            <label>School</label>
+                            <select id = "selectEditSchool">
+                            </select>
+                        </div>
+                        <label>BIO</label>
+                        <textarea id = "EditBIO"></textarea>
+                    <label>Password</label>
+                    <input  type="password" id = "EditPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                    <label>Confirm Password</label>
+                    <input  type="password" id = "EditConfirmPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                    <p id = "areaForError"></p>
+                    <select id = "selectEditRole">
+                        <option value="3">Guest</option>
+                        <option value="2">User</option>
+                        <option value="1">Admin</option>
+                    </select>
                 </div>
                 <div id = buttons>
-                <input type="button" value="Edit" id ="buttonEdit">
+                    <input type="button" value="Edit" id ="buttonEdit">
                 </div>
             </div>
             <div id="overlay"></div>

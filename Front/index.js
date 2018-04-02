@@ -1,37 +1,32 @@
-var valueName;
-var valueSurname;
-var valueAge;
-var valuePassword;
-var valueRole;
-var valueConfirmPasssword;
 var urlPage = 'http://localhost:8081/user/';
 var headerId;
 var headerRole;
 var headerHash;
 
 const objERROR = {
-	USER_LOGIN_ERROR: "Incorrect login or password. Try again",
-	USER_CREATE_ERROR: "User with this name exists.",
-	USER_INFO_ERROR: "User is not find",
-	USER_UPDATE_ERROR: "User can not update",
-	USER_RIGTHS_ERROR: "Sorry, you do not have the rights",
-	USER_DELETE_ERROR: "User already delete",
-	TIMESTAMP_TIMEOUT_ERROR: "The session is over, please re-login",
-	INVALID_TOKEN_ERROR: "The session is not find,please re-login",
-	TOKEN_INSERT_ERROR: "Can not insert session, please re-login",
-	TOKEN_UPDATE_ERROR: "Can not refresh session,please re-login",
-	CONNECT_ERROR: "Try again",
- 	USER_NAME_ERROR: "Invalid field Name values",
+    USER_LOGIN_ERROR: "Incorrect login or password. Try again",
+    USER_CREATE_ERROR: "User with this name exists.",
+    USER_INFO_ERROR: "User is not find",
+    USER_UPDATE_ERROR: "User can not update",
+    USER_RIGTHS_ERROR: "Sorry, you do not have the rights",
+    USER_DELETE_ERROR: "User already delete",
+    TIMESTAMP_TIMEOUT_ERROR: "The session is over, please re-login",
+    INVALID_TOKEN_ERROR: "The session is not find,please re-login",
+    TOKEN_INSERT_ERROR: "Can not insert session, please re-login",
+    TOKEN_UPDATE_ERROR: "Can not refresh session,please re-login",
+    CONNECT_ERROR: "Try again",
+    USER_NAME_ERROR: "Invalid field Name values",
     USER_SURNAME_ERROR: "Invalid field Surname values",
     USER_AGE_ERROR: "Invalid field Age values",
     USER_PASSWORD_ERROR: "Invalid field Password values",
 };
 
+
 $(document).ready(function() {
+
     $('#buttonNew').hide();
     $('#buttonShow').hide();
     $('#Exit').hide();
-
     $('#modal_close, #overlay, #ADD, #Cancel, #UPDATE, #buttonLoginIn, #buttonEdit').click(function() {
         $('#modal_formTwo, #modal_formThree, #modal_formFour, #modal_formFive, #modal_formEdit')
             .animate({
@@ -44,7 +39,6 @@ $(document).ready(function() {
                 }
             );
     });
-
     $('#loginIn').click(function(event) {
         event.preventDefault();
         $('#overlay').fadeIn(
@@ -59,22 +53,19 @@ $(document).ready(function() {
             }
         );
     });
-
     $('#signUp').click(function() {
+        getContries();
         modelWindow();
     });
-
     $('#buttonLoginIn').click(function() {
         $('#loginIn').hide();
         $('#signUp').hide();
         $('#Exit').show();
         postLoginPersonToServer();
     });
-
     $('#buttonSignUp').click(function() {
         postPersonsToServer();
     });
-
     $('#Exit').click(function() {
         $('#infTextarea').val("Sign up or Login in to enter");
         $('#loginIn').show();
@@ -85,10 +76,80 @@ $(document).ready(function() {
         $('table').hide();
     });
 
+    $('#selectSignUpContry').on('change', function() {
+        var checkContry = $(this).find(":checked").val();
+        getCity(checkContry);
+    });
+    $('#selectSignUpCity').on('change', function() {
+        var checkCity = $(this).find(":checked").val();
+        getSchool(checkCity);
+    });
+
+    function getSchool(checkCity) {
+        var selectShool = $('#selectSignUpSchool');
+        $.ajax({
+            url: 'http://localhost:8081/user/school',
+            headers: {
+                'header-city': checkCity,
+            },
+            type: 'GET',
+            success: function(data) {
+                var output = [];
+                $.each(data, function(key, value) {
+                    output.push('<option value="' + value.id + '">' + value.Name + '</option>');
+                });
+                selectShool.html(output.join(''));
+            },
+            error: function(data) {
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
+            }
+        });
+    }
+
+    function getCity(checkContry) {
+        var selectCity = $('#selectSignUpCity');
+        $.ajax({
+            url: 'http://localhost:8081/user/city',
+            headers: {
+                'header-contry': checkContry,
+            },
+            type: 'GET',
+            success: function(data) {
+                var output = [];
+                $.each(data, function(key, value) {
+                    output.push('<option value="' + value.id + '">' + value.Name + '</option>');
+                });
+                selectCity.html(output.join(''));
+            },
+            error: function(data) {
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
+            }
+        });
+    }
+
+    function getContries() {
+        var selectContry = $('#selectSignUpContry');
+        $.ajax({
+            url: 'http://localhost:8081/user',
+            type: 'GET',
+            success: function(data) {
+
+                var output = [];
+                $.each(data, function(key, value) {
+                    output.push('<option value="' + value.id + '">' + value.name + '</option>');
+                });
+                selectContry.html(output.join(''));
+
+            },
+            error: function(data) {
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
+            }
+        });
+    }
+
     function postLoginPersonToServer() {
         var valueLoginName = $('#loginUserName').val();
         var valueLoginPassword = $('#passwordLogiIn').val();
-
         $.ajax({
             url: 'http://localhost:8081/loginuser',
             type: 'POST',
@@ -113,7 +174,6 @@ $(document).ready(function() {
         $('#buttonNew').click(function() {
             modelWindow();
         });
-
         $('#buttonShow').click(function() {
             getPersonsByServer();
         });
@@ -136,14 +196,21 @@ $(document).ready(function() {
     }
 
     function postPersonsToServer() {
-        valueName = $('#signUpName').val();
-        valueSurname = $('#signUpSurname').val();
-        valueAge = $('#signUpAge').val();
-        valuePassword = $('#signUpPassword').val();
-        valueConfirmPasssword = $('#signUpConfirmPassword').val();
-        valueRole = $('#selectRole option:selected').text();
 
-        if (valuePassword === valueConfirmPasssword) {
+        var valueSignUp = {
+            valueName: $('#signUpName').val(),
+            valueSurname: $('#signUpSurname').val(),
+            valuePassword: $('#signUpPassword').val(),
+            valueConfirmPasssword: $('#signUpConfirmPassword').val(),
+            valueRole: $('#selectRole option:selected').val(),
+            valueBirthDay: $('#signUpBithDay').val(),
+            valueCountry: $('#selectSignUpContry option:selected').val(),
+            valueCity: $('#selectSignUpCity option:selected').val(),
+            valueSchool: $('#selectSignUpSchool option:selected').val(),
+            valueBIO: $('#SignUpBIO').val(),
+        };
+
+        if (valueSignUp.valuePassword === valueSignUp.valueConfirmPasssword) {
             $.ajax({
                 url: 'http://localhost:8081/user',
                 headers: {
@@ -151,11 +218,15 @@ $(document).ready(function() {
                 },
                 type: 'POST',
                 data: {
-                    name: valueName,
-                    surname: valueSurname,
-                    age: valueAge,
-                    password: valuePassword,
-                    role: valueRole
+                    name: valueSignUp.valueName,
+                    surname: valueSignUp.valueSurname,
+                    password: valueSignUp.valuePassword,
+                    role: valueSignUp.valueRole,
+                    birthday: valueSignUp.valueBirthDay,
+                    country: valueSignUp.valueCountry,
+                    city: valueSignUp.valueCity,
+                    school: valueSignUp.valueSchool,
+                    bio: valueSignUp.valueBIO,
                 },
                 success: function(data) {
                     $('#infTextarea').val('Registration completed successfully');
@@ -164,7 +235,6 @@ $(document).ready(function() {
                     $('#infTextarea').val(objERROR[data.responseJSON.message]);
                 }
             });
-
             $('#modal_formFive')
                 .animate({
                         opacity: 0,
@@ -206,15 +276,11 @@ $(document).ready(function() {
                         table.appendChild(tr);
                     }
                 });
-
                 tableForPersons.appendChild(table);
                 document.body.appendChild(tableForPersons);
-
                 tableForPersons.onclick = function(event) {
                     var target = event.target;
                     var targetId = +target.parentNode.getAttribute('id');
-
-
                     if (target.className == 'del') {
                         deletePersonByServer(targetId);
                     }
@@ -222,7 +288,6 @@ $(document).ready(function() {
                         getInfoPersonbyServer(targetId);
                     }
                     if (target.className == 'EditByPerson') {
-
                         postUpdatePersonToServer(targetId);
                     }
                 };
@@ -262,7 +327,6 @@ $(document).ready(function() {
                     }, 200);
             }
         );
-
         $.ajax({
             url: urlPage + targetId,
             headers: {
@@ -272,8 +336,12 @@ $(document).ready(function() {
             success: function(data) {
                 $('#infoName').text(data[0].nameuser);
                 $('#infoSurname').text(data[0].surnameuser);
-                $('#infoAge').text(data[0].age);
                 $('#infoRole').text(data[0].role);
+                $('#infoBirthDay').text(data[0].Birth_Date);
+                $('#infoCountry').text(data[0].country);
+                $('#infoCity').text(data[0].city);
+                $('#infoSchool').text(data[0].school);
+                $('#infoBIO').text(data[0].BIO);
             },
             error: function(data) {
                 $('#infTextarea').val(objERROR[data.responseJSON.message]);
@@ -303,21 +371,16 @@ $(document).ready(function() {
                 );
                 $('#EditName').val(data[0].nameuser);
                 $('#EditSurname').val(data[0].surnameuser);
-                $('#EditAge').val(data[0].age);
                 $('#EditPassword').val(data[0].password);
                 $('#selectEditRole option:selected').val(data[0].role)
-
             },
             error: function(data) {
                 $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
-
         });
-
         $('#buttonEdit').click(function(event) {
             valueName = $('#EditName').val();
             valueSurname = $('#EditSurname').val();
-            valueAge = $('#EditAge').val();
             valuePassword = $('#EditPassword').val();
             valueRole = $('#selectEditRole option:selected').text();
             $.ajax({
@@ -329,13 +392,11 @@ $(document).ready(function() {
                 data: {
                     name: valueName,
                     surname: valueSurname,
-                    age: valueAge,
                     password: valuePassword,
                     role: valueRole,
                 },
                 success: function(data) {
                     $('#infTextarea').val('Update success');
-
                 },
                 error: function(data) {
                     $('#infTextarea').val(objERROR[data.responseJSON.message]);

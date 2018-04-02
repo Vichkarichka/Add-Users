@@ -10,7 +10,6 @@ router.post('/', function(req, res, next) {
 
     req.checkBody('name', ob.objERRORS.USER_NAME).notEmpty().isAlpha();
     req.checkBody('surname', ob.objERRORS.USER_SURNAME).notEmpty().isAlpha();
-    req.checkBody('age', ob.objERRORS.USER_AGE).notEmpty().isInt();
     req.checkBody('password', ob.objERRORS.USER_PASSWORD).notEmpty().isLength({
         min: 5
     });
