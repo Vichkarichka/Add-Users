@@ -9,6 +9,7 @@ var tokenForLogin;
 var timestampForLogin;
 const timeForLogin = 60000;
 const countMin = 20;
+var role;
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
@@ -17,7 +18,6 @@ router.use(bodyParser.urlencoded({
 
 router.post('/', function(req, res) {
     var data = req.body;
-
     user.loginUserIntoApp(data).then(function(result) {
         if (result.length === 0) {
             res.status(406).json({
@@ -26,6 +26,9 @@ router.post('/', function(req, res) {
         } else {
             Object.keys(result).forEach(function(key) {
                 var row = result[key];
+                user.checkRoleIntoDataBase(row.id).then(function(result) {
+                    role = result[0].role;
+                });
                 user.findTokenInDataBase(row).then(function(result) {
                     if (result.length === 0) {
                         tokenForLogin = uuidv4();
@@ -34,6 +37,7 @@ router.post('/', function(req, res) {
                             res.status(200);
                             res.json({
                                 'hash': tokenForLogin,
+                                'role': role,
                             });
                             return;
                         }).catch(function(error) {
@@ -47,6 +51,7 @@ router.post('/', function(req, res) {
                         user.updateTokenInDataBase(row, tokenForLogin, timestampForLogin).then(function(result) {
                             res.status(200).json({
                                 'hash': tokenForLogin,
+                                'role': role,
                             });
                         }).catch(function(error) {
                             res.status(406).json({

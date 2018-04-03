@@ -1,7 +1,7 @@
 var urlPage = 'http://localhost:8081/user/';
 var headerId;
 var headerRole;
-var headerHash;
+var headerHash = sessionStorage.getItem('hash');
 
 const objERROR = {
     USER_LOGIN_ERROR: "Incorrect login or password. Try again",
@@ -24,9 +24,9 @@ const objERROR = {
 
 $(document).ready(function() {
 
-    $('#buttonNew').hide();
-    $('#buttonShow').hide();
-    $('#Exit').hide();
+    $('#buttonNew').show();
+    $('#buttonShow').show();
+    $('#Exit').show();
     $('#modal_close, #overlay, #ADD, #Cancel, #UPDATE, #buttonLoginIn, #buttonEdit').click(function() {
         $('#modal_formTwo, #modal_formThree, #modal_formFour, #modal_formFive, #modal_formEdit')
             .animate({
@@ -39,41 +39,16 @@ $(document).ready(function() {
                 }
             );
     });
-    $('#loginIn').click(function(event) {
-        event.preventDefault();
-        $('#overlay').fadeIn(
-            400,
-            function() {
-                $('#modal_formFour')
-                    .css('display', 'block')
-                    .animate({
-                        opacity: 1,
-                        top: '50%'
-                    }, 200);
-            }
-        );
-    });
-    $('#signUp').click(function() {
-        getContries();
+
+    $('#buttonNew').click(function() {
         modelWindow();
     });
-    $('#buttonLoginIn').click(function() {
-        $('#loginIn').hide();
-        $('#signUp').hide();
-        $('#Exit').show();
-        postLoginPersonToServer();
+    $('#buttonShow').click(function() {
+        getPersonsByServer();
     });
-    $('#buttonSignUp').click(function() {
-        postPersonsToServer();
-    });
+
     $('#Exit').click(function() {
-        $('#infTextarea').val("Sign up or Login in to enter");
-        $('#loginIn').show();
-        $('#signUp').show();
-        $('#Exit').hide();
-        $('#buttonNew').hide();
-        $('#buttonShow').hide();
-        $('table').hide();
+        document.location.href = 'main.html';
     });
 
     $('#selectSignUpContry').on('change', function() {
@@ -144,45 +119,6 @@ $(document).ready(function() {
             error: function(data) {
                 $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
-        });
-    }
-
-    function postLoginPersonToServer() {
-        var valueLoginName = $('#loginUserName').val();
-        var valueLoginPassword = $('#passwordLogiIn').val();
-        $.ajax({
-            url: 'http://localhost:8081/loginuser',
-            type: 'POST',
-            data: {
-                name: valueLoginName,
-                password: valueLoginPassword
-            },
-            success: function(data) {
-                headerHash = data.hash;
-                headerRole = data.role;
-                if (headerRole !== 1) {
-                    $('#buttonNew').show();
-                    $('#buttonShow').show();
-                    showButtonForPerson();
-                    $('#infTextarea').val('Congratulations, you have successfully entered');
-                } else {
-                    sessionStorage.setItem('hash', headerHash);
-                    document.location.href='AdminPage.html';
-                }
-
-            },
-            error: function(data) {
-                $('#infTextarea').val(objERROR[data.responseJSON.message]);
-            }
-        });
-    }
-
-    function showButtonForPerson() {
-        $('#buttonNew').click(function() {
-            modelWindow();
-        });
-        $('#buttonShow').click(function() {
-            getPersonsByServer();
         });
     }
 
