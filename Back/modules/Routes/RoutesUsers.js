@@ -12,7 +12,6 @@ var Role_User;
 
 function getRoles() {
     role.getRole().then(function(result) {
-        console.log(result);
         Role_Guest = result.guest;
         Role_Admin = result.admin;
         Role_User = result.user;

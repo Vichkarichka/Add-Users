@@ -54,7 +54,7 @@ $(document).ready(function() {
         );
     });
     $('#signUp').click(function() {
-        getContries();
+        getCountriesSignUp();
         modelWindow();
     });
     $('#buttonLoginIn').click(function() {
@@ -78,27 +78,33 @@ $(document).ready(function() {
 
     $('#selectSignUpContry').on('change', function() {
         var checkContry = $(this).find(":checked").val();
-        getCity(checkContry);
+        getCitySignUp(checkContry);
     });
     $('#selectSignUpCity').on('change', function() {
         var checkCity = $(this).find(":checked").val();
-        getSchool(checkCity);
+        getSchoolSignUp(checkCity);
+    });
+    $('#selectEditContry').on('change', function() {
+        var checkContry = $(this).find(":checked").val();
+        getCityEdit(checkContry);
+    });
+    $('#selectEditCity').on('change', function() {
+        var checkCity = $(this).find(":checked").val();
+        getSchoolEdit(checkCity);
     });
 
-    function getSchool(checkCity) {
-        var selectShool = $('#selectSignUpSchool');
+    function getCountry(selectContry) {
         $.ajax({
-            url: 'http://localhost:8081/user/school',
-            headers: {
-                'header-city': checkCity,
-            },
+            url: 'http://localhost:8081/user',
             type: 'GET',
             success: function(data) {
+
                 var output = [];
                 $.each(data, function(key, value) {
-                    output.push('<option value="' + value.id + '">' + value.Name + '</option>');
+                    output.push('<option value="' + value.id + '">' + value.name + '</option>');
                 });
-                selectShool.html(output.join(''));
+                selectContry.html(output.join(''));
+
             },
             error: function(data) {
                 $('#infTextarea').val(objERROR[data.responseJSON.message]);
@@ -106,8 +112,7 @@ $(document).ready(function() {
         });
     }
 
-    function getCity(checkContry) {
-        var selectCity = $('#selectSignUpCity');
+    function getCity(selectCity, checkContry) {
         $.ajax({
             url: 'http://localhost:8081/user/city',
             headers: {
@@ -127,24 +132,54 @@ $(document).ready(function() {
         });
     }
 
-    function getContries() {
-        var selectContry = $('#selectSignUpContry');
+    function getSchool(selectShool, checkCity) {
         $.ajax({
-            url: 'http://localhost:8081/user',
+            url: 'http://localhost:8081/user/school',
+            headers: {
+                'header-city': checkCity,
+            },
             type: 'GET',
             success: function(data) {
-
                 var output = [];
                 $.each(data, function(key, value) {
-                    output.push('<option value="' + value.id + '">' + value.name + '</option>');
+                    output.push('<option value="' + value.id + '">' + value.Name + '</option>');
                 });
-                selectContry.html(output.join(''));
-
+                selectShool.html(output.join(''));
             },
             error: function(data) {
                 $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
         });
+    }
+
+    function getCityEdit(checkContry) {
+        var selectCity = $('#selectEditCity');
+        getCity(selectCity, checkContry);
+    }
+
+    function getCountriesEdit() {
+        var selectContry = $('#selectEditContry');
+        getCountry(selectContry);
+    }
+
+    function getSchoolSignUp(checkCity) {
+        var selectShool = $('#selectSignUpSchool');
+        getSchool(selectShool, checkCity);
+    }
+
+    function getSchoolEdit(checkCity) {
+        var selectShool = $('#selectEditSchool');
+        getSchool(selectShool, checkCity);
+    }
+
+    function getCitySignUp(checkContry) {
+        var selectCity = $('#selectSignUpCity');
+        getCity(selectCity, checkContry);
+    }
+
+    function getCountriesSignUp() {
+        var selectContry = $('#selectSignUpContry');
+        getCountry(selectContry);
     }
 
     function postLoginPersonToServer() {
@@ -167,7 +202,7 @@ $(document).ready(function() {
                     $('#infTextarea').val('Congratulations, you have successfully entered');
                 } else {
                     sessionStorage.setItem('hash', headerHash);
-                    document.location.href='AdminPage.html';
+                    document.location.href = 'AdminPage.html';
                 }
 
             },
@@ -179,6 +214,7 @@ $(document).ready(function() {
 
     function showButtonForPerson() {
         $('#buttonNew').click(function() {
+            getCountriesSignUp();
             modelWindow();
         });
         $('#buttonShow').click(function() {
@@ -295,6 +331,7 @@ $(document).ready(function() {
                         getInfoPersonbyServer(targetId);
                     }
                     if (target.className == 'EditByPerson') {
+                        getCountriesEdit();
                         postUpdatePersonToServer(targetId);
                     }
                 };
@@ -379,17 +416,27 @@ $(document).ready(function() {
                 $('#EditName').val(data[0].nameuser);
                 $('#EditSurname').val(data[0].surnameuser);
                 $('#EditPassword').val(data[0].password);
-                $('#selectEditRole option:selected').val(data[0].role)
+                $('#EditBithDay').val(data[0].Birth_Date);
+                $('#EditBIO').val(data[0].BIO);
+                $("#selectEditRole :contains(data[0].role)").attr("selected", "selected");
             },
             error: function(data) {
                 $('#infTextarea').val(objERROR[data.responseJSON.message]);
             }
         });
         $('#buttonEdit').click(function(event) {
-            valueName = $('#EditName').val();
-            valueSurname = $('#EditSurname').val();
-            valuePassword = $('#EditPassword').val();
-            valueRole = $('#selectEditRole option:selected').text();
+            var valueUpdate = {
+                valueName: $('#EditName').val(),
+                valueSurname: $('#EditSurname').val(),
+                valuePassword: $('#EditPassword').val(),
+                valueRole: $('#selectEditRole option:selected').val(),
+                valueBirthDay: $('#EditBithDay').val(),
+                valueCountry: $('#selectEditContry option:selected').val(),
+                valueCity: $('#selectEditCity option:selected').val(),
+                valueSchool: $('#selectEditSchool option:selected').val(),
+                valueBIO: $('#EditBIO').val(),
+            };
+
             $.ajax({
                 url: urlPage + targetId,
                 headers: {
@@ -397,10 +444,15 @@ $(document).ready(function() {
                 },
                 type: 'POST',
                 data: {
-                    name: valueName,
-                    surname: valueSurname,
-                    password: valuePassword,
-                    role: valueRole,
+                    name: valueUpdate.valueName,
+                    surname: valueUpdate.valueSurname,
+                    password: valueUpdate.valuePassword,
+                    role: valueUpdate.valueRole,
+                    birthday: valueUpdate.valueBirthDay,
+                    country: valueUpdate.valueCountry,
+                    city: valueUpdate.valueCity,
+                    school: valueUpdate.valueSchool,
+                    bio: valueUpdate.valueBIO,
                 },
                 success: function(data) {
                     $('#infTextarea').val('Update success');

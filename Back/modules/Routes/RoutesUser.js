@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var ob = require('../Objecterror/objectError');
 var user = require('../Database/SqlQuery');
+var admin = require('../Database/SqlQueryAdmin');
 var au = require('../Authorization/Authorization');
 var role = require('../Authorization/Role');
 
@@ -12,7 +13,6 @@ var Role_User;
 
 function getRoles() {
     role.getRole().then(function(result) {
-        console.log(result);
         Role_Guest = result.guest;
         Role_Admin = result.admin;
         Role_User = result.user;
@@ -22,7 +22,7 @@ function getRoles() {
         });
     });
 }
-     getRoles();
+getRoles();
 
 router.post('/', function(req, res) {
     var data = req.body;
@@ -68,9 +68,54 @@ router.get('/school', function(req, res) {
     });
 });
 
+router.get('/country/:id', function(req, res) {
+    admin.getNameCountry(req.params.id).then(function(result) {
+        res.status(200).json(result);
+    }).catch(function(error) {
+        res.status(406).json({
+            message: ob.objERRORS.USER_INFO,
+        });
+    });
+});
+
+router.post('/country', function(req, res) {
+    var data = req.body;
+    admin.insertNewCountry(data).then(function(result) {
+        res.status(200).json("ADD");
+    }).catch(function(error) {
+        res.status(406).json({
+            message: ob.objERRORS.USER_INFO,
+        });
+    });
+});
+
+router.post('/country/:id', function(req, res) {
+    var data = req.body;
+    admin.updateCountry(data, req.params.id).then(function(result) {
+        res.status(200).json("Update");
+    }).catch(function(error) {
+        res.status(406).json({
+            message: ob.objERRORS.USER_INFO,
+        });
+    });
+});
+
+router.delete('/country/:id', function(req, res) {
+    admin.deleteCountryOfDataBase(req.params.id).then(function(result) {
+        res.status(200).json({
+            message: "User delete",
+        });
+    }).catch(function(error) {
+        res.status(406).json({
+            message: ob.objERRORS.USER_DELETE,
+        });
+    });
+
+})
+
 router.post('/:id', au.checkTokenForDataBase, function(req, res) {
     var data = req.body;
-    user.updateDataInDataBase(data.name, data.surname, data.age, data.password, data.role, req.params.id).then(function(result) {
+    user.updateDataInDataBase(data, req.params.id).then(function(result) {
         res.status(200).json({
             message: "Successfully"
         });
@@ -82,14 +127,8 @@ router.post('/:id', au.checkTokenForDataBase, function(req, res) {
 });
 
 router.get('/:id', au.checkTokenForDataBase, function(req, res) {
-
-    if (req.body.Role === Role_Guest) {
-        res.status(403).json({
-            message: ob.objERRORS.USER_RIGTHS,
-        });
-    }
-   else if (req.body.Role === Role_User) {
-        if (req.body.Id === req.params.id) {
+    if (req.body.Role === Role_User) {
+        if (req.body.Id === +req.params.id) {
             user.selectAllInformation(req.params.id).then(function(result) {
                 res.status(200).json(result);
             }).catch(function(error) {
@@ -98,14 +137,17 @@ router.get('/:id', au.checkTokenForDataBase, function(req, res) {
                 });
             });
         } else {
-            user.status(403).json({
+            res.status(403).json({
                 message: ob.objERRORS.USER_RIGTHS,
             });
         }
+    } else if (req.body.Role === Role_Guest) {
+        res.status(403).json({
+            message: ob.objERRORS.USER_RIGTHS,
+        });
     } else {
         user.selectAllInformation(req.params.id).then(function(result) {
             res.status(200).json(result);
-            console.log(result);
         }).catch(function(error) {
             res.status(400).json({
                 message: ob.objERRORS.CONNECT,

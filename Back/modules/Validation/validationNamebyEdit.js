@@ -9,9 +9,8 @@ router.use(bodyParser.urlencoded({
     extended: true
 }));
 
-router.post('/', function(req, res, next) {
+router.post('/:id', function(req, res, next) {
     var data = req.body;
-
     user.checkName(data).then(function(result) {
         if (result.length === 0 || result[0].id === parseInt(req.params.id)) {
             return next();

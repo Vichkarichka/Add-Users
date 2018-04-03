@@ -23,10 +23,20 @@ exports.pushDataToDataBase = function insertData(data) {
     return returnPromise(sql, people);
 }
 
-exports.updateDataInDataBase = function updateData(name, surname, password, role, id) {
-    var sql = "UPDATE Human SET nameuser = ?, surnameuser = ?, password = ?, role = ? WHERE id = ?";
-    var dataPersons = [name, surname, password, role, id];
-    return returnPromise(sql, dataPersons);
+exports.updateDataInDataBase = function updateData(data, id) {
+    var sql = "UPDATE Human SET ? WHERE id = " + id;
+    var people = {
+        nameuser: data.name,
+        surnameuser: data.surname,
+        password: data.password,
+        role: data.role,
+        Birth_Date: data.birthday,
+        Country: data.country,
+        City: data.city,
+        School: data.school,
+        BIO: data.bio,
+    };
+    return returnPromise(sql, people);
 }
 
 exports.loginUserIntoApp = function loginData(data) {
@@ -57,10 +67,10 @@ exports.updateTokenInDataBase = function updateToken(row, tokenForLogin, timesta
 }
 
 exports.selectAllInformation = function selectInfo(id) {
-var sql = "SELECT nameuser, surnameuser, password, Human.id, Birth_Date, BIO, Roles.name as role, Contries.name as country, Cities.name as city, Schools.name as school" + 
-" FROM Human inner join Roles on Human.role = Roles.id inner join Contries on Human.Country = Contries.id" + 
-" inner join Cities on Human.City = Cities.id inner join Schools on Human.School = Schools.id" + 
-" where Human.id = ?";
+    var sql = "SELECT nameuser, surnameuser, password, Human.id, Birth_Date, BIO, Roles.name as role, Contries.name as country, Cities.name as city, Schools.name as school" +
+        " FROM Human inner join Roles on Human.role = Roles.id inner join Contries on Human.Country = Contries.id" +
+        " inner join Cities on Human.City = Cities.id inner join Schools on Human.School = Schools.id" +
+        " where Human.id = ?";
     return returnPromise(sql, id);
 }
 
@@ -100,8 +110,8 @@ exports.getCity = function getCity(contry) {
 }
 
 exports.getSchool = function getSchool(city) {
-    var sql = "SELECT id, Name FROM Users.Schools inner JOIN Users.School_to_cities ON Schools.id = School_to_cities.School_id " + 
-    "WHERE Users.School_to_cities.Cities_id = ?";
+    var sql = "SELECT id, Name FROM Users.Schools inner JOIN Users.School_to_cities ON Schools.id = School_to_cities.School_id " +
+        "WHERE Users.School_to_cities.Cities_id = ?";
     return returnPromise(sql, city);
 }
 
