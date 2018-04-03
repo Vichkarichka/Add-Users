@@ -100,7 +100,7 @@ exports.selectRole = function selectRole() {
 }
 
 exports.getContries = function getContries() {
-    var sql = "SELECT id, name FROM Contries";
+    var sql = "SELECT id, Name FROM Contries";
     return returnPromise(sql);
 }
 
