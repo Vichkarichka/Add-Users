@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Add Users</title>
-        <link rel="stylesheet" href="./Style/style.css">
+        <title>Admin Page</title>
+        <link rel="stylesheet" href="../Style/styleForAdmin.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script type="text/javascript" src="index.js"></script>
+        <script type="text/javascript" src="../Scripts/adminPage.js"></script>
+        <script type="text/javascript" src="../Scripts/main.js"></script>
     </head>
     <body>
         <div id="page">
@@ -44,6 +45,63 @@
                 </div>
                 <button id ="buttonLoginIn">Login In</button>
             </div>
+            <div id = "modal_formCountry">
+                <span id="modal_close">X</span>
+                <div id = "formCountry">
+                    <p>New Country</p>
+                    <label>Name Country</label>
+                    <input type="text" id = "countryName" required pattern="[A-Za-z]+">
+                </div>
+                <button id ="addNewCountry">Add</button>
+            </div>
+            <div id = "modal_formEditCountry">
+                <span id="modal_close">X</span>
+                <div id = "formCountry">
+                    <p>Edit Country</p>
+                    <label>Name Country</label>
+                    <input type="text" id = "countryEditName" required pattern="[A-Za-z]+">
+                </div>
+                <button id ="EditCountry">Add</button>
+            </div>
+            <div id = "modal_formCity">
+                <span id="modal_close">X</span>
+                <div id = "formCity">
+                    <p>New City</p>
+                    <label>Select Country</label>
+                    <select id = "selectContry">
+                    </select>
+                    <label>Name City</label>
+                    <input type="text" id = "cityName" required pattern="[A-Za-z]+">
+                </div>
+                <button id ="addNewCity">Add</button>
+            </div>
+            <div id = "modal_formCityEdit">
+                <span id="modal_close">X</span>
+                <div id = "formCity">
+                    <p>New City</p>
+                    <label>Select Country</label>
+                    <select id = "selectContryEdit">
+                    </select>
+                    <label>Name City</label>
+                    <input type="text" id = "cityNameEdit" required pattern="[A-Za-z]+">
+                </div>
+                <button id ="EditCity">Add</button>
+            </div>
+            <div id = "modal_formSchool">
+                <span id="modal_close">X</span>
+                <div id = "formSchool">
+                    <p>New School</p>
+                    <label>Select Country</label>
+                    <select id = "selectContrySchool">
+                    </select>
+                    <label>Select City</label>
+                    <select id = "selectCitySchool">
+                    </select>
+                    <label>Name School</label>
+                    <input type="text" id = "schoolName" required pattern="[A-Za-z]+">
+                </div>
+                <button id ="addSchool">Add</button>
+            </div>
             <div id = "modal_formFive">
                 <span id="modal_close">X</span>
                 <div id = "formSignUp">
@@ -81,7 +139,7 @@
                     </select>
                 </div>
                 <div id = buttons>
-                    <input type="button" value="Sign Up" id ="buttonSignUp">
+                    <button id = "buttonSignUp">Sign Up</button>
                 </div>
             </div>
             <div id = "modal_formEdit">
@@ -93,20 +151,20 @@
                     <label>Surname</label>
                     <input type="text" id = "EditSurname" required pattern="[A-Za-z]+">
                     <label>Birth Day</label>
-                        <input type="date" id = "EditBithDay">
-                        <div id = 'selectCountryCitySchool'>
-                            <label>Country</label>
-                            <select id = "selectEditContry">
-                            </select>
-                            <label>City</label>
-                            <select id = "selectEditCity">
-                            </select>
-                            <label>School</label>
-                            <select id = "selectEditSchool">
-                            </select>
-                        </div>
-                        <label>BIO</label>
-                        <textarea id = "EditBIO"></textarea>
+                    <input type="date" id = "EditBithDay">
+                    <div id = 'selectEditCountryCitySchool'>
+                        <label>Country</label>
+                        <select id = "selectEditContry">
+                        </select>
+                        <label>City</label>
+                        <select id = "selectEditCity">
+                        </select>
+                        <label>School</label>
+                        <select id = "selectEditSchool">
+                        </select>
+                    </div>
+                    <label>BIO</label>
+                    <textarea id = "EditBIO"></textarea>
                     <label>Password</label>
                     <input  type="password" id = "EditPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
                     <label>Confirm Password</label>
@@ -119,17 +177,21 @@
                     </select>
                 </div>
                 <div id = buttons>
-                    <input type="button" value="Edit" id ="buttonEdit">
+                    <button id = "buttonEdit">Edit</button>
                 </div>
             </div>
             <div id="overlay"></div>
-            <button id = "buttonNew">New Person</button>
-            <button id = "buttonShow">Show All Persons</button>
+            <button id = "buttonNewAdmin">New Person</button>
+            <button id = "buttonShowAdmin">Show All Persons</button>
+            <button id = "addCountry">Show country</button>
+            <button id = "createCountry">Create country</button>
+            <button id = "showCity">Show city</button>
+            <button id = "createCity">Create city</button>
+            <button id = "showSchool">Show school</button>
+            <button id = "createSchool">Create school</button>
         </div>
         <div id="buttonSignUpLoginIn">
-            <button id = "loginIn">Login In</button>
-            <button id = "signUp">Sign Up</button>
-            <button id = "Exit">Exit</button>
+            <button id = "ExitAdmin">Exit</button>
         </div>
         <div id = "informationTextArea">
             <textarea id = "infTextarea" disabled="disabled">Hey. You must register before you can log in.</textarea>

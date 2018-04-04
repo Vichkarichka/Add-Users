@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Admin Page</title>
-        <link rel="stylesheet" href="./Style/styleForAdmin.css">
+        <title>Add Users</title>
+        <link rel="stylesheet" href="../Style/style.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script type="text/javascript" src="adminPage.js"></script>
-        <script type="text/javascript" src="index.js"></script>
+        <script type="text/javascript" src="../Scripts/index.js"></script>
+        <script type="text/javascript" src="../Scripts/main.js"></script>
     </head>
     <body>
         <div id="page">
@@ -44,15 +44,6 @@
                     <input  type="password" id = "passwordLogiIn" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
                 </div>
                 <button id ="buttonLoginIn">Login In</button>
-            </div>
-            <div id = "modal_formCountry">
-                <span id="modal_close">X</span>
-                <div id = "formCountry">
-                    <p>New Country</p>
-                    <label>Name Country</label>
-                    <input type="text" id = "countryName" required pattern="[A-Za-z]+">
-                </div>
-                <button id ="addNewCountry">Add</button>
             </div>
             <div id = "modal_formFive">
                 <span id="modal_close">X</span>
@@ -103,20 +94,20 @@
                     <label>Surname</label>
                     <input type="text" id = "EditSurname" required pattern="[A-Za-z]+">
                     <label>Birth Day</label>
-                    <input type="date" id = "EditBithDay">
-                    <div id = 'selectEditCountryCitySchool'>
-                        <label>Country</label>
-                        <select id = "selectEditContry">
-                        </select>
-                        <label>City</label>
-                        <select id = "selectEditCity">
-                        </select>
-                        <label>School</label>
-                        <select id = "selectEditSchool">
-                        </select>
-                    </div>
-                    <label>BIO</label>
-                    <textarea id = "EditBIO"></textarea>
+                        <input type="date" id = "EditBithDay">
+                        <div id = 'selectCountryCitySchool'>
+                            <label>Country</label>
+                            <select id = "selectEditContry">
+                            </select>
+                            <label>City</label>
+                            <select id = "selectEditCity">
+                            </select>
+                            <label>School</label>
+                            <select id = "selectEditSchool">
+                            </select>
+                        </div>
+                        <label>BIO</label>
+                        <textarea id = "EditBIO"></textarea>
                     <label>Password</label>
                     <input  type="password" id = "EditPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
                     <label>Confirm Password</label>
@@ -133,15 +124,13 @@
                 </div>
             </div>
             <div id="overlay"></div>
-            <button id = "buttonNewAdmin">New Person</button>
-            <button id = "buttonShowAdmin">Show All Persons</button>
-            <button id = "addCountry">Show country</button>
-            <button id = "createCountry">Create country</button>
-            <button id = "addCity">Show city</button>
-            <button id = "addSchool">Show school</button>
+            <button id = "buttonNew">New Person</button>
+            <button id = "buttonShow">Show All Persons</button>
         </div>
         <div id="buttonSignUpLoginIn">
-            <button id = "ExitAdmin">Exit</button>
+            <button id = "loginIn">Login In</button>
+            <button id = "signUp">Sign Up</button>
+            <button id = "Exit">Exit</button>
         </div>
         <div id = "informationTextArea">
             <textarea id = "infTextarea" disabled="disabled">Hey. You must register before you can log in.</textarea>

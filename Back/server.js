@@ -8,6 +8,9 @@ var validationName = require('./modules/Validation/validationName');
 var validationNameByEdit = require('./modules/Validation/validationNamebyEdit');
 var routesUser = require('./modules/Routes/RoutesUser');
 var routesUsers = require('./modules/Routes/RoutesUsers');
+var routesCity = require('./modules/Routes/RoutesCity');
+var routesSchool = require('./modules/Routes/RoutesSchool');
+var routesCountry = require('./modules/Routes/RoutesCountry');
 var user = require('./modules/Database/SqlQuery');
 var Promise = require("bluebird");
 
@@ -42,8 +45,12 @@ app.use('/loginuser', loginuser);
 app.use('/user', validationName);
 app.use('/user/:id', validationNameByEdit);
 app.use('/user', validation);
+app.use('/user', routesCity);
+app.use('/user', routesSchool);
+app.use('/user', routesCountry);
 app.use('/user', routesUser);
 app.use('/users', routesUsers);
+
 
 app.use(function(req, res, next) {
     headerHash = req.headers["header-hash"];

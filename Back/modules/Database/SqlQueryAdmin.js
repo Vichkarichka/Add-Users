@@ -25,6 +25,70 @@ exports.getNameCountry = function getNameCountry(id) {
     return returnPromise(sql, id);
 }
 
+exports.getCities = function getCities() {
+    var sql = "SELECT Cities.id as id, Cities.Name as Name, Contries.name as country" +
+        " FROM Cities inner join Contries on Cities.Countries_id = Contries.id";
+    return returnPromise(sql);
+}
+
+exports.insertNewCity = function insertNewCity(data) {
+    var city = {
+        Name: data.name,
+        Countries_id: data.countryName,
+    };
+    var sql = "INSERT INTO Cities SET ?";
+    return returnPromise(sql, city);
+}
+
+exports.deleteCityOfDataBase = function deleteCityOfDataBase(id) {
+    var sql = "DELETE FROM Cities WHERE id = ?";
+    return returnPromise(sql, id);
+}
+
+exports.getNameCity = function getNameCity(id) {
+    var sql = "SELECT Name FROM Cities WHERE id = ?";
+    return returnPromise(sql, id);
+}
+
+exports.updateCity = function updateCity(data, id) {
+    var city = {
+        Name: data.name,
+        Countries_id: data.countryName,
+    };
+    var sql = "UPDATE Cities SET ? WHERE id = " + id;
+    return returnPromise(sql, city);
+}
+
+exports.getSchools = function getSchools() {
+    var sql = "SELECT Schools.Name as Name, Cities.Name as City, Contries.Name as Country" +
+        " FROM Schools inner join School_to_cities on Schools.id = School_to_cities.School_id " +
+        " inner join Cities on School_to_cities.Cities_id = Cities.id" +
+        " inner join Contries on Contries.id = Cities.Countries_id";
+    return returnPromise(sql);
+}
+
+exports.insertNewSchool = function insertNewSchool(data) {
+    var schools = {
+        Name: data.name,
+    };
+    var sql = "INSERT INTO Schools SET ?";
+    return returnPromise(sql, schools);
+}
+
+exports.insertSchoolToCities = function insertSchoolToCities(data, id) {
+    var schools = {
+        School_id: id,
+        Cities_id: data.cityName,
+    };
+    var sql = "INSERT INTO School_to_cities SET ?"
+    return returnPromise(sql, schools);
+}
+exports.deleteSchoolOfDataBase = function deleteSchoolOfDataBase(id) {
+	console.log(id);
+    var sql = "DELETE FROM Schools WHERE id = ?";
+    return returnPromise(sql, id);
+}
+
 function returnPromise(sql, dataForDB) {
     return Promise.using(getSqlConnection(), function(connection) {
         return connection.query(sql, dataForDB).then(function(rows) {
