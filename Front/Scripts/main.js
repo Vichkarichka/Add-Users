@@ -1,3 +1,5 @@
+var urlPage = 'http://localhost:8081/user/';
+
 const objERROR = {
     USER_LOGIN_ERROR: "Incorrect login or password. Try again",
     USER_CREATE_ERROR: "User with this name exists.",
@@ -14,6 +16,8 @@ const objERROR = {
     USER_SURNAME_ERROR: "Invalid field Surname values",
     USER_AGE_ERROR: "Invalid field Age values",
     USER_PASSWORD_ERROR: "Invalid field Password values",
+    USER_SELECT_ERROR: "Invalid select values",
+    USER_BIO_ERROE: "Invalid field BIO",
 };
 
 function getModalForm(modalForm) {
@@ -33,6 +37,7 @@ function getModalForm(modalForm) {
 
 function renderingSelect(data, selectElement) {
     var output = [];
+    output.push('<option>' + "Select..." + '</option>');
     $.each(data, function(key, value) {
         output.push('<option value="' + value.id + '">' + value.Name + '</option>');
     });

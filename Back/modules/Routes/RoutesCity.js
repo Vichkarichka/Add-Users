@@ -3,7 +3,7 @@ var router = express.Router();
 var ob = require('../Objecterror/objectError');
 var admin = require('../Database/SqlQueryAdmin');
 var au = require('../Authorization/Authorization');
-
+var vl = require('../Validation/validation');
 
 router.get('/cities', function(req, res) {
     admin.getCities().then(function(result) {
@@ -15,7 +15,7 @@ router.get('/cities', function(req, res) {
     });
 });
 
-router.post('/city', function(req, res) {
+router.post('/city', vl.validationFieldCity, function(req, res) {
     var data = req.body;
     admin.insertNewCity(data).then(function(result) {
         res.status(200).json("ADD");
@@ -48,7 +48,7 @@ router.get('/city/:id', function(req, res) {
     });
 });
 
-router.post('/city/:id', function(req, res) {
+router.post('/city/:id', vl.validationFieldCity, function(req, res) {
     var data = req.body;
     admin.updateCity(data, req.params.id).then(function(result) {
         res.status(200).json("Update");

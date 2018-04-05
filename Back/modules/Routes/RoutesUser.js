@@ -5,6 +5,7 @@ var user = require('../Database/SqlQuery');
 var admin = require('../Database/SqlQueryAdmin');
 var au = require('../Authorization/Authorization');
 var role = require('../Authorization/Role');
+var vl = require('../Validation/validation');
 
 
 var Role_Admin;
@@ -24,7 +25,7 @@ function getRoles() {
 }
 getRoles();
 
-router.post('/', function(req, res) {
+router.post('/',vl.validationFieldSignUp, function(req, res) {
     var data = req.body;
     user.pushDataToDataBase(data).then(function(result) {
         if (result.length !== 0) {
@@ -69,7 +70,7 @@ router.get('/school', function(req, res) {
     });
 });
 
-router.post('/:id', au.checkTokenForDataBase, function(req, res) {
+router.post('/:id', au.checkTokenForDataBase, vl.validationFieldSignUp, function(req, res) {
     var data = req.body;
     user.updateDataInDataBase(data, req.params.id).then(function(result) {
         res.status(200).json({

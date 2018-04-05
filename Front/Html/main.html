@@ -36,51 +36,49 @@
             </div>
             <div id = "modal_formFour">
                 <span id="modal_close">X</span>
-                <div id = "formLogin">
+                <form id = "formLogin">
                     <p>Login In</p>
                     <label>User Name</label>
                     <input type="text" id = "loginUserName" required pattern="[A-Za-z]+">
                     <label>Password</label>
                     <input  type="password" id = "passwordLogiIn" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
-                </div>
+                </form>
                 <button id ="buttonLoginIn">Login In</button>
             </div>
             <div id = "modal_formFive">
                 <span id="modal_close">X</span>
-                <div id = "formSignUp">
+                <form id = "formSignUp">
                     <p>Sign Up</p>
-                    <form>
-                        <label>Name</label>
-                        <input type="text" id = "signUpName" required pattern="[A-Za-z]+">
-                        <label>Surname</label>
-                        <input type="text" id = "signUpSurname" required pattern="[A-Za-z]+">
-                        <label>Birth Day</label>
-                        <input type="date" id = "signUpBithDay">
-                        <div id = 'selectCountryCitySchool'>
-                            <label>Country</label>
-                            <select id = "selectSignUpContry">
-                            </select>
-                            <label>City</label>
-                            <select id = "selectSignUpCity">
-                            </select>
-                            <label>School</label>
-                            <select id = "selectSignUpSchool">
-                            </select>
-                        </div>
-                        <label>BIO</label>
-                        <textarea id = "SignUpBIO"></textarea>
-                        <label>Password</label>
-                        <input type="password" id = "signUpPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
-                        <label>Confirm Password</label>
-                        <input type="password" id = "signUpConfirmPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
-                    </form>
+                    <label>Name</label>
+                    <input type="text" id = "signUpName" required pattern="[A-Za-z]+">
+                    <label>Surname</label>
+                    <input type="text" id = "signUpSurname" required pattern="[A-Za-z]+">
+                    <label>Birth Day</label>
+                    <input type="date" id = "signUpBithDay">
+                    <div id = 'selectCountryCitySchool'>
+                        <label>Country</label>
+                        <select id = "selectSignUpContry">
+                        </select>
+                        <label>City</label>
+                        <select id = "selectSignUpCity">
+                        </select>
+                        <label>School</label>
+                        <select id = "selectSignUpSchool">
+                        </select>
+                    </div>
+                    <label>BIO</label>
+                    <textarea id = "SignUpBIO"></textarea>
+                    <label>Password</label>
+                    <input type="password" id = "signUpPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
+                    <label>Confirm Password</label>
+                    <input type="password" id = "signUpConfirmPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
                     <p id = "areaForError"></p>
                     <select id = "selectRole">
                         <option value="3">Guest</option>
                         <option value="2">User</option>
                         <option value="1">Admin</option>
                     </select>
-                </div>
+                </form>
                 <div id = buttons>
                     <input type="button" value="Sign Up" id ="buttonSignUp">
                 </div>
@@ -94,20 +92,20 @@
                     <label>Surname</label>
                     <input type="text" id = "EditSurname" required pattern="[A-Za-z]+">
                     <label>Birth Day</label>
-                        <input type="date" id = "EditBithDay">
-                        <div id = 'selectCountryCitySchool'>
-                            <label>Country</label>
-                            <select id = "selectEditContry">
-                            </select>
-                            <label>City</label>
-                            <select id = "selectEditCity">
-                            </select>
-                            <label>School</label>
-                            <select id = "selectEditSchool">
-                            </select>
-                        </div>
-                        <label>BIO</label>
-                        <textarea id = "EditBIO"></textarea>
+                    <input type="date" id = "EditBithDay">
+                    <div id = 'selectCountryCitySchool'>
+                        <label>Country</label>
+                        <select id = "selectEditContry">
+                        </select>
+                        <label>City</label>
+                        <select id = "selectEditCity">
+                        </select>
+                        <label>School</label>
+                        <select id = "selectEditSchool">
+                        </select>
+                    </div>
+                    <label>BIO</label>
+                    <textarea id = "EditBIO"></textarea>
                     <label>Password</label>
                     <input  type="password" id = "EditPassword" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{5,}">
                     <label>Confirm Password</label>

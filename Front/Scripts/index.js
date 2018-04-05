@@ -1,4 +1,4 @@
-var urlPage = 'http://localhost:8081/user/';
+
 var headerId;
 var headerRole;
 var headerHash;
@@ -34,9 +34,11 @@ $(document).ready(function() {
         $('#signUp').hide();
         $('#Exit').show();
         postLoginPersonToServer();
+        $("#formLogin").trigger('reset');
     });
     $('#buttonSignUp').click(function() {
         postPersonsToServer();
+        $("#formSignUp").trigger('reset');
     });
     $('#Exit').click(function() {
         $('#infTextarea').val("Sign up or Login in to enter");

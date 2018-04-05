@@ -3,7 +3,7 @@ var router = express.Router();
 var ob = require('../Objecterror/objectError');
 var admin = require('../Database/SqlQueryAdmin');
 var au = require('../Authorization/Authorization');
-
+var vl = require('../Validation/validation');
 
 router.post('/school', function(req, res) {
     var data = req.body;
@@ -33,8 +33,8 @@ router.get('/schools', function(req, res) {
 });
 
 router.delete('/school/:id', function(req, res) {
-    console.log(req.params);
-    admin.deleteSchoolOfDataBase(req.params.id).then(function(result) {
+    var headerCity = req.headers["header-cityid"];
+    admin.deleteSchoolOfDataBase(req.params.id, headerCity).then(function(result) {
         res.status(200).json({
             message: "Schools delete",
         });
@@ -44,5 +44,28 @@ router.delete('/school/:id', function(req, res) {
         });
     });
 });
+
+router.get('/school/:id', function(req, res) {
+    var headerCity = req.headers["header-cityid"];
+    admin.getNameSchool(req.params.id, headerCity).then(function(result) {
+        res.status(200).json(result);
+    }).catch(function(error) {
+        res.status(406).json({
+            message: ob.objERRORS.USER_INFO,
+        });
+    });
+});
+
+router.post('/school/:id', vl.validationFieldSchool, function(req, res) {
+    var data = req.body;
+    admin.updateSchool(data, req.params.id).then(function(result) {
+        res.status(200).json("Update");
+    }).catch(function(error) {
+        res.status(406).json({
+            message: ob.objERRORS.USER_INFO,
+        });
+    });
+});
+
 
 module.exports = router;

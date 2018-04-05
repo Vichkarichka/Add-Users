@@ -67,7 +67,7 @@ exports.updateTokenInDataBase = function updateToken(row, tokenForLogin, timesta
 }
 
 exports.selectAllInformation = function selectInfo(id) {
-    var sql = "SELECT nameuser, surnameuser, password, Human.id, Birth_Date, BIO, Roles.name as role, Contries.name as country, Cities.name as city, Schools.name as school" +
+    var sql = "SELECT nameuser, surnameuser, password, Human.id, DATE_FORMAT(Birth_Date, '%Y%-%m%-%d') as Birth_Date, BIO, Roles.name as role, Contries.name as country, Cities.name as city, Schools.name as school" +
         " FROM Human left outer join Roles on Human.role = Roles.id left outer join Contries on Human.Country = Contries.id" +
         " left outer join Cities on Human.City = Cities.id left outer join Schools on Human.School = Schools.id" +
         " where Human.id = ?";

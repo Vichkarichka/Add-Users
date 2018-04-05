@@ -4,7 +4,7 @@ html{
     background: #4E5066;
  }
  #modal_formFour, #modal_formCountry, #modal_formCity, #modal_formEditCountry, #modal_formCityEdit,
- #modal_formSchool {
+ #modal_formSchool, #modal_formSchoolEdit {
 	width: 200px;
 height: 200px;
 background: #9ea7af;
@@ -21,7 +21,7 @@ padding: 20px 10px;
 }
 #modal_formFive , #modal_formEdit{
 	width: 200px;
-height: 450px;
+height: 480px;
 background: #9ea7af;
 border-radius:10px;
 position: fixed;
@@ -347,4 +347,8 @@ margin-left: 1%;
   width: 200px;
   height: 0;
   margin-left: 1100px;
+}
+#formCountry {
+  width: 250px;
+  height: 100px;
 }

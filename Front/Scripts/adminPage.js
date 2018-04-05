@@ -7,9 +7,9 @@ $(document).ready(function() {
     $('#buttonNewAdmin').show();
     $('#buttonShowAdmin').show();
     $('#ExitAdmin').show();
-    $('#modal_close, #overlay, #ADD, #Cancel, #UPDATE, #buttonEdit').click(function() {
+    $('#modal_close, #overlay, #ADD, #Cancel, #UPDATE, #buttonEdit, #addNewCountry, #buttonSignUp').click(function() {
         $('#modal_formTwo, #modal_formThree, #modal_formFour, #modal_formFive, #modal_formEdit, #modal_formCountry, #modal_formCity,' +
-                '#modal_formEditCountry, #modal_formCityEdit, #modal_formSchool')
+                '#modal_formEditCountry, #modal_formCityEdit, #modal_formSchool, #modal_formSchoolEdit')
             .animate({
                     opacity: 0,
                     top: '45%'
@@ -30,6 +30,10 @@ $(document).ready(function() {
     $('#buttonShowAdmin').click(function() {
         getPersonsByServer();
         $("#countrytable").hide();
+    });
+    $('#buttonSignUp').click(function() {
+        postPersonsToServer();
+        $("#formSignUp").trigger('reset');
     });
 
     $('#addCountry').click(function() {
@@ -359,8 +363,8 @@ $(document).ready(function() {
                         tr.innerHTML = '<td>' + value.Name + '</td>' +
                             '<td>' + value.City + '</td>' +
                             '<td>' + value.Country + '</td>' +
-                            '<button class="EditSchool">Edit</button>' +
-                            '<button class="DeleteSchool">Delete</button>';
+                            '<button class="EditSchool" data-id=' + value.CityId + '>Edit</button>' +
+                            '<button class="DeleteSchool" data-id=' + value.CityId + '>Delete</button>';
                         tr.setAttribute('id', value.id);
                         table.appendChild(tr);
                     }
@@ -371,10 +375,10 @@ $(document).ready(function() {
                     var target = event.target;
                     var targetId = +target.parentNode.getAttribute('id');
                     if (target.className == 'DeleteSchool') {
-                        deleteSchool(targetId);
+                        deleteSchool(targetId, target.dataset.id);
                     }
                     if (target.className == 'EditSchool') {
-
+                        editSchool(targetId, target.dataset.id);
                     }
                 };
             },
@@ -413,10 +417,62 @@ $(document).ready(function() {
         });
     });
 
-    function deleteSchool(targetId) {
+    function deleteSchool(targetId, id) {
         var urlSchool = "http://localhost:8081/user/school/" + targetId;
-        requestDelete(urlSchool);
+        $.ajax({
+            url: urlSchool,
+            headers: {
+                'header-hash': headerHash,
+                'header-cityid': +id,
+            },
+            type: 'DELETE',
+            success: function(data) {
+                $('#infTextarea').val(data.message);
+            },
+            error: function(data) {
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
+            }
+        });
     }
+
+     function editSchool(targetId, id) {
+        urlCity = 'http://localhost:8081/user/school/' + targetId;
+        $.ajax({
+            url: urlCity,
+            headers: {
+                'header-hash': headerHash,
+                'header-cityid': +id,
+            },
+            type: 'GET',
+            success: function(data) {
+                var modalForm = $('#modal_formSchoolEdit');
+                getModalForm(modalForm);
+                $('#schoolEditName').val(data[0].Name);
+            },
+            error: function(data) {
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
+            }
+        });
+    }
+    $('#EditSchool').click(function() {
+        var valueNameSchool = $('#schoolEditName').val();
+        $.ajax({
+            url: urlCity,
+            headers: {
+                'header-hash': headerHash,
+            },
+            type: 'POST',
+            data: {
+                name: valueNameSchool,
+            },
+            success: function(data) {
+                $('#infTextarea').val('Name school changed successfully');
+            },
+            error: function(data) {
+                $('#infTextarea').val(objERROR[data.responseJSON.message]);
+            }
+        });
+    });
 
     function requestDelete(urlRequest) {
         $.ajax({
