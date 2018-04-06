@@ -4,8 +4,10 @@ var ob = require('../Objecterror/objectError');
 var admin = require('../Database/SqlQueryAdmin');
 var au = require('../Authorization/Authorization');
 var vl = require('../Validation/validation');
+var uniq = require('../Authorization/Uniq');
 
-router.post('/school', function(req, res) {
+
+router.post('/school', uniq.checkSchoolForDataBase, function(req, res) {
     var data = req.body;
     admin.insertNewSchool(data).then(function(result) {
         admin.insertSchoolToCities(data, result.insertId).then(function(result) {
@@ -22,7 +24,7 @@ router.post('/school', function(req, res) {
     });
 });
 
-router.get('/schools', function(req, res) {
+router.get('/schools', au.checkTokenForDataBase, function(req, res) {
     admin.getSchools().then(function(result) {
         res.status(200).json(result);
     }).catch(function(error) {

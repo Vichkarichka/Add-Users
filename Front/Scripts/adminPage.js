@@ -7,7 +7,7 @@ $(document).ready(function() {
     $('#buttonNewAdmin').show();
     $('#buttonShowAdmin').show();
     $('#ExitAdmin').show();
-    $('#modal_close, #overlay, #ADD, #Cancel, #UPDATE, #buttonEdit, #addNewCountry, #buttonSignUp').click(function() {
+    $('#modal_close, #overlay, #ADD, #Cancel, #UPDATE, #buttonEdit, #addNewCountry, #buttonSignUp, #addNewCity').click(function() {
         $('#modal_formTwo, #modal_formThree, #modal_formFour, #modal_formFive, #modal_formEdit, #modal_formCountry, #modal_formCity,' +
                 '#modal_formEditCountry, #modal_formCityEdit, #modal_formSchool, #modal_formSchoolEdit')
             .animate({
@@ -39,20 +39,6 @@ $(document).ready(function() {
     $('#addCountry').click(function() {
         $("table").hide();
         showCountry();
-    });
-
-    $('#createCountry').click(function() {
-        createCountry();
-    });
-
-    $('#createCity').click(function() {
-        getCountriesByCity();
-        createCity();
-    });
-
-    $('#createSchool').click(function() {
-        getCountriesBySchool()
-        createSchool();
     });
 
     $('#selectContrySchool').on('change', function() {
@@ -99,7 +85,7 @@ $(document).ready(function() {
 
     function showCountry() {
         $.ajax({
-            url: 'http://localhost:8081/user',
+            url: 'http://localhost:8081/user/country',
             headers: {
                 'header-hash': headerHash,
             },
@@ -126,6 +112,9 @@ $(document).ready(function() {
                         table.appendChild(tr);
                     }
                 });
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + '<button class ="createCountry">Create Country</button>' + '</td>';
+                table.appendChild(tr);
                 tableForCountry.appendChild(table);
                 document.body.appendChild(tableForCountry);
                 tableForCountry.onclick = function(event) {
@@ -136,6 +125,9 @@ $(document).ready(function() {
                     }
                     if (target.className == 'EditCountry') {
                         editCountry(targetId);
+                    }
+                    if (target.className == 'createCountry') {
+                        createCountry();
                     }
                 };
             },
@@ -244,6 +236,9 @@ $(document).ready(function() {
                         table.appendChild(tr);
                     }
                 });
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + '<button class ="createCity">Create City</button>' + '</td>';
+                table.appendChild(tr);
                 tableForCity.appendChild(table);
                 document.body.appendChild(tableForCity);
                 tableForCity.onclick = function(event) {
@@ -255,6 +250,10 @@ $(document).ready(function() {
                     if (target.className == 'EditCity') {
                         getCountriesByCityEdit();
                         editCity(targetId);
+                    }
+                    if (target.className == 'createCity') {
+                        getCountriesByCity();
+                        createCity();
                     }
                 };
             },
@@ -369,6 +368,9 @@ $(document).ready(function() {
                         table.appendChild(tr);
                     }
                 });
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + '<button class ="createSchool">Create School</button>' + '</td>';
+                table.appendChild(tr);
                 tableForSchool.appendChild(table);
                 document.body.appendChild(tableForSchool);
                 tableForSchool.onclick = function(event) {
@@ -379,6 +381,10 @@ $(document).ready(function() {
                     }
                     if (target.className == 'EditSchool') {
                         editSchool(targetId, target.dataset.id);
+                    }
+                    if (target.className == 'createSchool') {
+                        getCountriesBySchool();
+                        createSchool();
                     }
                 };
             },
@@ -435,7 +441,7 @@ $(document).ready(function() {
         });
     }
 
-     function editSchool(targetId, id) {
+    function editSchool(targetId, id) {
         urlCity = 'http://localhost:8081/user/school/' + targetId;
         $.ajax({
             url: urlCity,

@@ -8,7 +8,7 @@ var ob = require('../Objecterror/objectError');
 var tokenForLogin;
 var timestampForLogin;
 const timeForLogin = 60000;
-const countMin = 20;
+const countMin = 1;
 var role;
 
 router.use(bodyParser.json());

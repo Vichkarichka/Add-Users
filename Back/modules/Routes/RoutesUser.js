@@ -38,15 +38,6 @@ router.post('/',vl.validationFieldSignUp, function(req, res) {
     });
 });
 
-router.get('/', function(req, res) {
-    user.getContries().then(function(result) {
-        res.status(200).json(result);
-    }).catch(function(error) {
-        res.status(406).json({
-            message: ob.objERRORS.USER_UPDATE,
-        });
-    });
-});
 
 router.get('/city', function(req, res) {
     var headerContry = req.headers["header-contry"];

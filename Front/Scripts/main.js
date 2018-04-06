@@ -18,6 +18,9 @@ const objERROR = {
     USER_PASSWORD_ERROR: "Invalid field Password values",
     USER_SELECT_ERROR: "Invalid select values",
     USER_BIO_ERROE: "Invalid field BIO",
+    USER_SCHOOL_ERROR: "Invalid field school",
+    USER_COUNTRY_ERROR: "Invalid field country",
+    USER_CITY_ERROR: "Invalid field city",
 };
 
 function getModalForm(modalForm) {
@@ -46,7 +49,7 @@ function renderingSelect(data, selectElement) {
 
 function getCountry(selectContry) {
     $.ajax({
-        url: 'http://localhost:8081/user',
+        url: 'http://localhost:8081/user/countries',
         type: 'GET',
         success: function(data) {
             renderingSelect(data, selectContry);

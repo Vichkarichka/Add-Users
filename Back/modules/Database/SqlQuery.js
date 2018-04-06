@@ -115,6 +115,21 @@ exports.getSchool = function getSchool(city) {
     return returnPromise(sql, city);
 }
 
+exports.checkCountry = function checkCountry(data) {
+    var sql = "SELECT Name FROM Contries WHERE Name = ?";
+    return returnPromise(sql, data.name);
+}
+
+exports.checkCity = function checkCity(data) {
+    var sql = "SELECT Name, Countries_id as Country FROM Cities WHERE Name = ? and Countries_id = " + data.countryName;
+    return returnPromise(sql, data.name);
+}
+
+exports.checkSchool = function checkSchool(data) {
+    var sql = "SELECT Name FROM Schools WHERE Name = ?";
+    return returnPromise(sql, data.name);
+}
+
 function returnPromise(sql, dataForDB) {
     return Promise.using(getSqlConnection(), function(connection) {
         return connection.query(sql, dataForDB).then(function(rows) {

@@ -4,6 +4,7 @@ var ob = require('../Objecterror/objectError');
 
 exports.checkTokenForDataBase = function checkTokenForDataBase(req, res, next) {
     var headerHash = req.headers["header-hash"];
+    console.log("1");
     user.checkToken(headerHash).then(function(result) {
         if (result.length === 0) {
             res.status(404).json({

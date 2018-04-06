@@ -26,7 +26,7 @@ exports.getNameCountry = function getNameCountry(id) {
 }
 
 exports.getCities = function getCities() {
-    var sql = "SELECT Cities.id as id, Cities.Name as Name, Contries.name as country" +
+    var sql = "SELECT Cities.id as id, Cities.Name as Name, Contries.name as country, Contries.id as countryId" +
         " FROM Cities inner join Contries on Cities.Countries_id = Contries.id";
     return returnPromise(sql);
 }

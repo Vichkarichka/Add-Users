@@ -46,7 +46,6 @@ app.use('/', function(req, res, next) {
 app.use('/loginuser', loginuser);
 app.use('/user', validationName);
 app.use('/user/:id', validationNameByEdit);
-//app.use('/user', validation);
 app.use('/user', routesCity);
 app.use('/user', routesSchool);
 app.use('/user', routesCountry);
